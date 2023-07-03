@@ -14,11 +14,15 @@ Only plugins are supported for now.
 
 [ ] Add extra/domside scripts support
 
+[ ] Add support for properties of type link and info
+
 ## Behaviors
 
 [ ] Make a sample behavior
 
 [ ] Make exporter for behaviors
+
+[ ] Add support for properties of type link and info
 
 ## Effects
 
