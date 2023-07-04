@@ -4,7 +4,11 @@ const C3 = self.C3;
 
 C3.Behaviors[BEHAVIOR_INFO.id] = class extends C3.SDKBehaviorBase {
   constructor(opts) {
-    super(opts);
+    if (BEHAVIOR_INFO.hasDomSide) {
+      super(opts, BEHAVIOR_INFO.id);
+    } else {
+      super(opts);
+    }
   }
 
   Release() {
@@ -91,4 +95,4 @@ Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
 
 //<-- INSTANCE -->
 
-B_C.Instance = getInstanceJs(scriptInterface);
+B_C.Instance = getInstanceJs(C3.SDKBehaviorInstanceBase, scriptInterface);

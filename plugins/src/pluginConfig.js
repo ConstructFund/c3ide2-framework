@@ -9,16 +9,37 @@ module.exports = {
   website: "https://www.construct.net",
   documentation: "https://www.construct.net",
   description: "Description",
+  // icon: "icon.svg", // defaults to "icon.svg" if omitted
+  // world, object, dom
   type: "object",
-  additionalFiles: [],
+  domSideScripts: [
+    // "domSide.js", // no need to include "c3runtime/" prefix
+  ],
+  fileDependencies: [
+    /*
+    {
+      filename: "filename.js", // no need to include "c3runtime/" prefix
+      type:
+        "copy-to-output"
+        "inline-script"
+        "external-dom-script"
+        "external-runtime-script"
+        "external-css"
+
+      // for copy-to-output only
+      // fileType: "image/png"
+    }
+    */
+  ],
   info: {
+    // world only
+    defaultImageUrl: null,
     Set: {
       // world only
       IsResizable: false,
       IsRotatable: false,
       Is3D: false,
       HasImage: false,
-      DefaultImageURL: null,
       IsTiled: false,
       SupportsZElevation: false,
       SupportsColor: false,
@@ -31,6 +52,7 @@ module.exports = {
       // world and object
       CanBeBundled: true,
       IsDeprecated: false,
+      GooglePlayServicesEnabled: false,
     },
     AddCommonACEs: {
       // world only
@@ -57,23 +79,36 @@ module.exports = {
         "color"
         "object"
         "group"
+        "link"
+        "info"
 
       id: "property_id",
-      value: 0,
       options: {
+        initialValue: 0,
         interpolatable: false,
-        minValue: 0, // omit to disable
-        maxValue: 100, // omit to disable
+
+        // minValue: 0, // omit to disable
+        // maxValue: 100, // omit to disable
 
         // for type combo only
-        items: [
-          {itemId1: "item name1" },
-          {itemId2: "item name2" },
-        ],
-        dragSpeedMultiplier: 1, // omit to disable
+        // items: [
+        //   {itemId1: "item name1" },
+        //   {itemId2: "item name2" },
+        // ],
+
+        // dragSpeedMultiplier: 1, // omit to disable
 
         // for type object only
-        allowedPluginIds: ["Sprite"],
+        // allowedPluginIds: ["Sprite", "<world>"],
+
+        // for type link only
+        // linkCallback: `function(instOrObj) {}`,
+        // callbackType:
+        //   "for-each-instance"
+        //   "once-for-type"
+
+        // for type info only
+        // infoCallback: `function(inst) {}`,
       },
       name: "Property Name",
       desc: "Property Description",

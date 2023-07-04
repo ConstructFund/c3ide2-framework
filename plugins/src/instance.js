@@ -1,5 +1,5 @@
-function getInstanceJs(scriptInterface) {
-  return class extends C3.SDKInstanceBase {
+function getInstanceJs(parentClass, scriptInterface) {
+  return class extends parentClass {
     constructor(inst, properties) {
       super(inst);
 

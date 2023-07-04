@@ -13,8 +13,36 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
     this._info.SetVersion(PLUGIN_INFO.version);
     this._info.SetCategory(PLUGIN_INFO.category);
     this._info.SetAuthor(PLUGIN_INFO.author);
-    this._info.SetPluginType(PLUGIN_INFO.type);
+    this._info.SetPluginType(
+      PLUGIN_INFO.type === "object" ? "object" : "world"
+    );
     this._info.SetHelpUrl(self.lang(".help-url"));
+    if (PLUGIN_INFO.icon) {
+      this._info.SetIcon(
+        PLUGIN_INFO.icon,
+        PLUGIN_INFO.icon.endsWith(".svg") ? "image/svg+xml" : "image/png"
+      );
+    }
+
+    if (PLUGIN_INFO.defaultImageUrl) {
+      this._info.SetDefaultImageURL(`c3runtime/${PLUGIN_INFO.defaultImageUrl}`);
+    }
+
+    if (PLUGIN_INFO.domSideScripts) {
+      this._info.SetDOMSideScripts(
+        PLUGIN_INFO.domSideScripts.map((s) => `c3runtime/${s}`)
+      );
+    }
+
+    if (PLUGIN_INFO.fileDependencies) {
+      PLUGIN_INFO.fileDependencies.forEach((file) => {
+        this._info.AddFileDependency({
+          ...file,
+          filename: `c3runtime/${file.filename}`,
+        });
+      });
+    }
+
     if (PLUGIN_INFO.info && PLUGIN_INFO.info.Set)
       Object.keys(PLUGIN_INFO.info.Set).forEach((key) => {
         const value = PLUGIN_INFO.info.Set[key];
@@ -47,7 +75,12 @@ P_C.Type = class extends SDK.ITypeBase {
   }
 };
 
-P_C.Instance = class extends SDK.IInstanceBase {
+const instanceParentClasses = {
+  object: SDK.IInstanceBase,
+  world: SDK.IWorldInstanceBase,
+  dom: SDK.IWorldInstanceBase,
+};
+P_C.Instance = class extends instanceParentClasses[PLUGIN_INFO.type] {
   constructor(sdkType, inst) {
     super(sdkType, inst);
   }

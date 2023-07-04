@@ -10,19 +10,19 @@ Only plugins are supported for now.
 
 [x] Make a sample plugin for non world objects
 
-[ ] Make a sample DOM Element plugin
+[x] Make a sample DOM Element plugin
 
-[ ] Add extra/domside scripts support
+[x] Add extra/domside scripts support
 
-[ ] Add support for properties of type link and info
+[x] Add support for properties of type link and info
 
 ## Behaviors
 
-[ ] Make a sample behavior
+[x] Make a sample behavior
 
-[ ] Make exporter for behaviors
+[x] Make exporter for behaviors
 
-[ ] Add support for properties of type link and info
+[x] Add support for properties of type link and info
 
 ## Effects
 

@@ -14,6 +14,29 @@ SDK.Behaviors[BEHAVIOR_INFO.id] = class extends SDK.IBehaviorBase {
     this._info.SetCategory(BEHAVIOR_INFO.category);
     this._info.SetAuthor(BEHAVIOR_INFO.author);
     this._info.SetHelpUrl(self.lang(".help-url"));
+
+    if (PLUGIN_INFO.icon) {
+      this._info.SetIcon(
+        PLUGIN_INFO.icon,
+        PLUGIN_INFO.icon.endsWith(".svg") ? "image/svg+xml" : "image/png"
+      );
+    }
+
+    if (PLUGIN_INFO.domSideScripts) {
+      this._info.SetDOMSideScripts(
+        PLUGIN_INFO.domSideScripts.map((s) => `c3runtime/${s}`)
+      );
+    }
+
+    if (PLUGIN_INFO.fileDependencies) {
+      PLUGIN_INFO.fileDependencies.forEach((file) => {
+        this._info.AddFileDependency({
+          ...file,
+          filename: `c3runtime/${file.filename}`,
+        });
+      });
+    }
+
     if (BEHAVIOR_INFO.info && BEHAVIOR_INFO.info.Set)
       Object.keys(BEHAVIOR_INFO.info.Set).forEach((key) => {
         const value = BEHAVIOR_INFO.info.Set[key];
@@ -24,8 +47,7 @@ SDK.Behaviors[BEHAVIOR_INFO.id] = class extends SDK.IBehaviorBase {
     SDK.Lang.PushContext(".properties");
     this._info.SetProperties(
       (BEHAVIOR_INFO.properties || []).map(
-        (prop) =>
-          new SDK.PluginProperty(prop.type, prop.id, prop.value, prop.options)
+        (prop) => new SDK.PluginProperty(prop.type, prop.id, prop.options)
       )
     );
     SDK.Lang.PopContext(); // .properties

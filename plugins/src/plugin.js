@@ -2,9 +2,33 @@ const C3 = self.C3;
 
 //<-- PLUGIN_INFO -->
 
-C3.Plugins[PLUGIN_INFO.id] = class extends C3.SDKPluginBase {
+const parentClass = {
+  object: {
+    scripting: self.IInstance,
+    instance: C3.SDKInstanceBase,
+    plugin: C3.SDKPluginBase,
+  },
+  world: {
+    scripting: self.IWorldInstance,
+    instance: C3.SDKWorldInstanceBase,
+    plugin: C3.SDKPluginBase,
+  },
+  dom: {
+    scripting: self.IDOMInstance,
+    instance: C3.SDKDOMInstanceBase,
+    plugin: C3.SDKDOMPluginBase,
+  },
+};
+
+C3.Plugins[PLUGIN_INFO.id] = class extends (
+  parentClass[PLUGIN_INFO.type].plugin
+) {
   constructor(opts) {
-    super(opts);
+    if (PLUGIN_INFO.hasDomSide) {
+      super(opts, PLUGIN_INFO.id);
+    } else {
+      super(opts);
+    }
   }
 
   Release() {
@@ -29,7 +53,10 @@ const map = new WeakMap();
 
 //<-- SCRIPT_INTERFACE -->
 
-const scriptInterface = getScriptInterface(self.IInstance, map);
+const scriptInterface = getScriptInterface(
+  parentClass[PLUGIN_INFO.type].scripting,
+  map
+);
 
 // extend script interface with plugin actions
 Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
@@ -91,4 +118,7 @@ Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
 
 //<-- INSTANCE -->
 
-P_C.Instance = getInstanceJs();
+P_C.Instance = getInstanceJs(
+  parentClass[PLUGIN_INFO.type].instance,
+  scriptInterface
+);

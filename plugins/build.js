@@ -21,7 +21,24 @@ function removeFilesRecursively(dir) {
   }
 }
 
-function getFileListFromConfig(files) {
+function getFileListFromConfig(config) {
+  const files = [];
+  if (config.domSideScripts) {
+    config.domSideScripts.forEach(function (file) {
+      files.push(`c3runtime/${file}`);
+    });
+  }
+
+  if (config.fileDependencies) {
+    config.fileDependencies.forEach(function (file) {
+      files.push(`c3runtime/${file.filename}`);
+    });
+  }
+
+  if (config.defaultImageUrl) {
+    files.push(`c3runtime/${config.defaultImageUrl}`);
+  }
+
   return files;
 }
 
@@ -47,9 +64,9 @@ function addonFromConfig(config) {
       "lang/en-US.json",
       "aces.json",
       "addon.json",
-      "icon.svg",
+      config.icon ? config.icon : "icon.svg",
       "editor.js",
-      ...getFileListFromConfig(config.additionalFiles || []),
+      ...getFileListFromConfig(config),
     ],
   };
 }
@@ -348,22 +365,23 @@ emptyFiles.forEach((file) => {
 const config = require("./src/pluginConfig.js");
 
 const addonJson = addonFromConfig(config);
-
 // write addon.json
 fs.writeFileSync("./export/addon.json", JSON.stringify(addonJson, null, 2));
 
 const lang = langFromConfig(config);
-
 // write lang/en-US.json
 fs.writeFileSync("./export/lang/en-US.json", JSON.stringify(lang, null, 2));
 
 const aces = acesFromConfig(config);
-
 // write aces.json
 fs.writeFileSync("./export/aces.json", JSON.stringify(aces, null, 2));
 
 // copy icon.svg
-fs.copyFileSync("./src/icon.svg", "./export/icon.svg");
+if (config.icon) {
+  fs.copyFileSync("./src/" + config.icon, "./export/" + config.icon);
+} else {
+  fs.copyFileSync("./src/icon.svg", "./export/icon.svg");
+}
 
 function getEditorPluginInfoFromConfig(config) {
   const editorPluginInfo = {
@@ -371,12 +389,46 @@ function getEditorPluginInfoFromConfig(config) {
     version: config.version,
     category: config.category,
     author: config.author,
-    type: config.type,
     addonType: config.addonType,
     info: config.info,
-    properties: config.properties,
+    domSideScripts: config.domSideScripts,
+    fileDependencies: config.fileDependencies,
+    icon: config.icon,
   };
-  return "const PLUGIN_INFO = " + JSON.stringify(editorPluginInfo, null, 2);
+  //return "const BEHAVIOR_INFO = " + JSON.stringify(editorPluginInfo, null, 2);
+  return `const BEHAVIOR_INFO = {
+    ...${JSON.stringify(editorPluginInfo, null, 2)},
+    properties: [
+      ${config.properties
+        .map((property) => {
+          const options = {
+            ...property.options,
+          };
+          delete options.infoCallback;
+          delete options.linkCallback;
+          return `{
+            type: ${property.type},
+            id: ${property.id},
+            name: ${property.name},
+            desc: ${property.desc},
+            options: {
+              ...${JSON.stringify(options, null, 2)},
+              ${
+                property.options.hasOwnProperty("infoCallback")
+                  ? `infoCallback: ${property.options.infoCallback},`
+                  : ""
+              }
+              ${
+                property.options.hasOwnProperty("linkCallback")
+                  ? `linkCallback: ${property.options.linkCallback},`
+                  : ""
+              }
+            }
+          }`;
+        })
+        .join(",\n")}
+    ],
+  };`;
 }
 
 // write editor.js and replace "//<-- PLUGIN_INFO -->" with the plugin info
@@ -391,6 +443,8 @@ fs.writeFileSync("./export/editor.js", editorWithPluginInfo);
 function getRuntimePluginInfoFromConfig(config) {
   return `const PLUGIN_INFO = {
   id: "${config.id}",
+  type: "${config.type}",
+  hasDomSide: ${config.domSideScripts && config.domSideScripts.length > 0},
   Acts: {
     ${Object.keys(config.Acts)
       .map((key) => {
@@ -474,6 +528,39 @@ const pluginWithPluginInfo = plugin
   .replaceAll("//<-- SCRIPT_INTERFACE -->", scriptInterface);
 
 fs.writeFileSync("./export/c3runtime/plugin.js", pluginWithPluginInfo);
+
+if (config.domSideScripts) {
+  config.domSideScripts.forEach((script) => {
+    const domSide = fs.readFileSync(
+      path.join(__dirname, "src", script),
+      "utf8"
+    );
+    const domSideWithId = domSide.replaceAll(
+      "//<-- DOM_COMPONENT_ID -->",
+      `const DOM_COMPONENT_ID = "${config.id}";`
+    );
+    fs.writeFileSync(
+      path.join(__dirname, "export", "c3runtime", script),
+      domSideWithId
+    );
+  });
+}
+
+if (config.additionalFiles) {
+  config.additionalFiles.forEach((file) => {
+    fs.copyFileSync(
+      path.join(__dirname, "src", file),
+      path.join(__dirname, "export", "c3runtime", file)
+    );
+  });
+}
+
+if (config.defaultImageUrl) {
+  fs.copyFileSync(
+    path.join(__dirname, "src", config.defaultImageUrl),
+    path.join(__dirname, "export", "c3runtime", config.defaultImageUrl)
+  );
+}
 
 if (!devBuild) {
   // zip the content of the export folder and name it with the plugin id and version and use .c3addon as extension
