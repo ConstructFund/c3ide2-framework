@@ -32,6 +32,6 @@ Only plugins are supported for now.
 
 ## Themes
 
-[ ] Make a sample theme
+[x] Make a sample theme
 
-[ ] Make exporter for themes
+[x] Make exporter for themes

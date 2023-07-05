@@ -546,11 +546,11 @@ if (config.domSideScripts) {
   });
 }
 
-if (config.additionalFiles) {
-  config.additionalFiles.forEach((file) => {
+if (config.fileDependencies) {
+  config.fileDependencies.forEach((file) => {
     fs.copyFileSync(
-      path.join(__dirname, "src", file),
-      path.join(__dirname, "export", "c3runtime", file)
+      path.join(__dirname, "src", file.filename),
+      path.join(__dirname, "export", "c3runtime", file.filename)
     );
   });
 }
