@@ -1,0 +1,52 @@
+name: Build and Release
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Get last modified file
+        id: getfile
+        run: |
+          last_modified_file=$(ls -Art dist | tail -n 1)
+          echo "Last modified file: $last_modified_file"
+          echo "::set-output name=filename::$last_modified_file"
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.getfile.outputs.filename }}
+          release_name: Release ${{ steps.getfile.outputs.filename }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist/${{ steps.getfile.outputs.filename }}
+          asset_name: ${{ steps.getfile.outputs.filename }}
+          asset_content_type: application/octet-stream

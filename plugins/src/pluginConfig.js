@@ -4,7 +4,17 @@ module.exports = {
   id: "plugin_id",
   name: "My Plugin",
   version: "1.0.0.0",
-  category: "general",
+  category:
+    // "3d",
+    // "data-and-storage",
+    // "form-controls",
+    // "input",
+    // "media",
+    // "monetisation",
+    // "platform-specific",
+    // "web",
+    // "other"
+    "general",
   author: "skymen",
   website: "https://www.construct.net",
   documentation: "https://www.construct.net",
@@ -103,6 +113,7 @@ module.exports = {
 
         // for type link only
         // linkCallback: `function(instOrObj) {}`,
+        // linkText: "Link Text",
         // callbackType:
         //   "for-each-instance"
         //   "once-for-type"
