@@ -435,10 +435,8 @@ function getEditorPluginInfoFromConfig(config) {
           delete options.linkCallback;
           delete options.items;
           return `{
-            type: ${property.type},
-            id: ${property.id},
-            name: ${property.name},
-            desc: ${property.desc},
+            type: "${property.type}",
+            id: "${property.id}",
             options: {
               ...${JSON.stringify(options, null, 2)},
               ${
@@ -454,12 +452,13 @@ function getEditorPluginInfoFromConfig(config) {
               ${
                 property.options.hasOwnProperty("items")
                   ? `items: ${JSON.stringify(
-                      Object.keys(property.options.items),
+                      property.options.items.map((x) => Object.keys(x)[0]),
                       null,
                       2
                     )},`
                   : ""
               }
+            },
           }`;
         })
         .join(",\n")}
