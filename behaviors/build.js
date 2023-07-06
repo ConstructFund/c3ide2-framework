@@ -134,7 +134,7 @@ function langFromConfig(config) {
     };
     if (property.type === "combo") {
       root.properties[property.id].items = {};
-      property.items.forEach((item) => {
+      property.options.items.forEach((item) => {
         const key = Object.keys(item)[0];
         root.properties[key].items[key] = item[key];
       });
@@ -433,6 +433,7 @@ function getEditorPluginInfoFromConfig(config) {
           };
           delete options.infoCallback;
           delete options.linkCallback;
+          delete options.items;
           return `{
             type: ${property.type},
             id: ${property.id},
@@ -450,7 +451,15 @@ function getEditorPluginInfoFromConfig(config) {
                   ? `linkCallback: ${property.options.linkCallback},`
                   : ""
               }
-            }
+              ${
+                property.options.hasOwnProperty("items")
+                  ? `items: ${JSON.stringify(
+                      Object.keys(property.options.items),
+                      null,
+                      2
+                    )},`
+                  : ""
+              }
           }`;
         })
         .join(",\n")}
