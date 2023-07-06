@@ -15,21 +15,21 @@ SDK.Behaviors[BEHAVIOR_INFO.id] = class extends SDK.IBehaviorBase {
     this._info.SetAuthor(BEHAVIOR_INFO.author);
     this._info.SetHelpUrl(self.lang(".help-url"));
 
-    if (PLUGIN_INFO.icon) {
+    if (BEHAVIOR_INFO.icon) {
       this._info.SetIcon(
-        PLUGIN_INFO.icon,
-        PLUGIN_INFO.icon.endsWith(".svg") ? "image/svg+xml" : "image/png"
+        BEHAVIOR_INFO.icon,
+        BEHAVIOR_INFO.icon.endsWith(".svg") ? "image/svg+xml" : "image/png"
       );
     }
 
-    if (PLUGIN_INFO.domSideScripts) {
+    if (BEHAVIOR_INFO.domSideScripts) {
       this._info.SetDOMSideScripts(
-        PLUGIN_INFO.domSideScripts.map((s) => `c3runtime/${s}`)
+        BEHAVIOR_INFO.domSideScripts.map((s) => `c3runtime/${s}`)
       );
     }
 
-    if (PLUGIN_INFO.fileDependencies) {
-      PLUGIN_INFO.fileDependencies.forEach((file) => {
+    if (BEHAVIOR_INFO.fileDependencies) {
+      BEHAVIOR_INFO.fileDependencies.forEach((file) => {
         this._info.AddFileDependency({
           ...file,
           filename: `c3runtime/${file.filename}`,
