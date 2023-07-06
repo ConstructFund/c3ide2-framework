@@ -177,8 +177,8 @@ module.exports = {
 
       // The text that appears in the event sheet. Note, every single param must be used in the display text.
       // You can also use [b] and [i] tags.
-      // You can also use the [my] tag to include the behavior icon and name.
-      displayText: "[my]: Sample action [i]{0}[/i]",
+      // You can also use the {my} tag to include the behavior icon and name.
+      displayText: "{my}: Sample action [i]{0}[/i]",
 
       // The description of the action as it appears in the add action dialog
       description: "This is a sample action",
@@ -275,8 +275,8 @@ module.exports = {
 
       // The text that appears in the event sheet. Note, every single param must be used in the display text.
       // You can also use [b] and [i] tags.
-      // You can also use the [my] tag to include the behavior icon and name.
-      displayText: "[my]: Sample condition [i]{0}[/i]",
+      // You can also use the {my} tag to include the behavior icon and name.
+      displayText: "{my}: Sample condition [i]{0}[/i]",
 
       // The description of the condition as it appears in the add condition dialog
       description: "This is a sample condition",
