@@ -2,6 +2,37 @@ const C3 = self.C3;
 
 //<-- BEHAVIOR_INFO -->
 
+const camelCasedMap = new Map();
+
+function camelCasify(str) {
+  // If the string is already camelCased, return it
+  if (camelCasedMap.has(str)) {
+    return camelCasedMap.get(str);
+  }
+  // Replace any non-valid JavaScript identifier characters with spaces
+  let cleanedStr = str.replace(/[^a-zA-Z0-9$_]/g, " ");
+
+  // Split the string on spaces
+  let words = cleanedStr.split(" ").filter(Boolean);
+
+  // Capitalize the first letter of each word except for the first one
+  for (let i = 1; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+  }
+
+  // Join the words back together
+  let result = words.join("");
+
+  // If the first character is a number, prepend an underscore
+  if (!isNaN(parseInt(result.charAt(0)))) {
+    result = "_" + result;
+  }
+
+  camelCasedMap.set(str, result);
+
+  return result;
+}
+
 C3.Behaviors[BEHAVIOR_INFO.id] = class extends C3.SDKBehaviorBase {
   constructor(opts) {
     if (BEHAVIOR_INFO.hasDomSide) {
@@ -39,9 +70,9 @@ const scriptInterface = getScriptInterface(self.IBehaviorInstance, map);
 Object.keys(BEHAVIOR_INFO.Acts).forEach((key) => {
   const ace = BEHAVIOR_INFO.Acts[key];
   if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[key] = function (...args) {
+  scriptInterface.prototype[camelCasify(key)] = function (...args) {
     const sdkInst = map.get(this);
-    B_C.Acts[key].call(sdkInst, ...args);
+    B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
   };
 });
 
@@ -52,10 +83,10 @@ Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
   const ace = BEHAVIOR_INFO.Cnds[key];
   if (!ace.autoScriptInterface || ace.isStatic || ace.isLooping) return;
   if (ace.isTrigger) {
-    scriptInterface.prototype[key] = function (callback, ...args) {
+    scriptInterface.prototype[camelCasify(key)] = function (callback, ...args) {
       const callbackWrapper = () => {
         const sdkInst = map.get(this);
-        if (B_C.Cnds[key].call(sdkInst, ...args)) {
+        if (B_C.Cnds[camelCasify(key)].call(sdkInst, ...args)) {
           callback();
         }
       };
@@ -63,9 +94,9 @@ Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
       return () => this.removeEventListener(key, callbackWrapper, false);
     };
   } else {
-    scriptInterface.prototype[key] = function (...args) {
+    scriptInterface.prototype[camelCasify(key)] = function (...args) {
       const sdkInst = map.get(this);
-      return B_C.Cnds[key].call(sdkInst, ...args);
+      return B_C.Cnds[camelCasify(key)].call(sdkInst, ...args);
     };
   }
 });
@@ -74,9 +105,9 @@ Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
 Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
   const ace = BEHAVIOR_INFO.Exps[key];
   if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[key] = function (...args) {
+  scriptInterface.prototype[camelCasify(key)] = function (...args) {
     const sdkInst = map.get(this);
-    return B_C.Exps[key].call(sdkInst, ...args);
+    return B_C.Exps[camelCasify(key)].call(sdkInst, ...args);
   };
 });
 //====== SCRIPT INTERFACE ======
@@ -87,27 +118,27 @@ B_C.Cnds = {};
 B_C.Exps = {};
 Object.keys(BEHAVIOR_INFO.Acts).forEach((key) => {
   const ace = BEHAVIOR_INFO.Acts[key];
-  B_C.Acts[key] = function (...args) {
+  B_C.Acts[camelCasify(key)] = function (...args) {
     if (ace.forward) ace.forward(this).call(this, ...args);
     else if (ace.handler) ace.handler.call(this, ...args);
   };
 });
 Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
   const ace = BEHAVIOR_INFO.Cnds[key];
-  B_C.Cnds[key] = function (...args) {
+  B_C.Cnds[camelCasify(key)] = function (...args) {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
   if (ace.isTrigger && ace.autoScriptInterface) {
     addonTriggers.push({
-      method: key,
+      method: B_C.Cnds[camelCasify(key)],
       id: key,
     });
   }
 });
 Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
   const ace = BEHAVIOR_INFO.Exps[key];
-  B_C.Exps[key] = function (...args) {
+  B_C.Exps[camelCasify(key)] = function (...args) {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
