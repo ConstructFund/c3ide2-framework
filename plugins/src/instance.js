@@ -1,4 +1,4 @@
-function getInstanceJs(parentClass, scriptInterface) {
+function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
   return class extends parentClass {
     constructor(inst, properties) {
       super(inst);
@@ -19,6 +19,14 @@ function getInstanceJs(parentClass, scriptInterface) {
 
     LoadFromJson(o) {
       // load state for savegames
+    }
+
+    Trigger(method) {
+      super.Trigger(method);
+      const addonTrigger = addonTriggers.find((x) => x.method === method);
+      if (addonTrigger) {
+        this.GetScriptInterface().dispatchEvent(new C3.Event(addonTrigger.id));
+      }
     }
 
     GetScriptInterfaceClass() {

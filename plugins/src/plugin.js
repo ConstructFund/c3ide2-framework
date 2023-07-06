@@ -68,14 +68,29 @@ Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
   };
 });
 
+const addonTriggers = [];
+
 // extend script interface with plugin conditions
-Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
-  const ace = PLUGIN_INFO.Cnds[key];
-  if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[key] = function (...args) {
-    const sdkInst = map.get(this);
-    return P_C.Cnds[key].call(sdkInst, ...args);
-  };
+Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
+  const ace = BEHAVIOR_INFO.Cnds[key];
+  if (!ace.autoScriptInterface || ace.isStatic || ace.isLooping) return;
+  if (ace.isTrigger) {
+    scriptInterface.prototype[key] = function (callback, ...args) {
+      const callbackWrapper = () => {
+        const sdkInst = map.get(this);
+        if (B_C.Cnds[key].call(sdkInst, ...args)) {
+          callback();
+        }
+      };
+      this.addEventListener(key, callbackWrapper, false);
+      return () => this.removeEventListener(key, callbackWrapper, false);
+    };
+  } else {
+    scriptInterface.prototype[key] = function (...args) {
+      const sdkInst = map.get(this);
+      return B_C.Cnds[key].call(sdkInst, ...args);
+    };
+  }
 });
 
 // extend script interface with plugin expressions
@@ -100,12 +115,18 @@ Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
     else if (ace.handler) ace.handler.call(this, ...args);
   };
 });
-Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
-  const ace = PLUGIN_INFO.Cnds[key];
-  P_C.Cnds[key] = function (...args) {
+Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
+  const ace = BEHAVIOR_INFO.Cnds[key];
+  B_C.Cnds[key] = function (...args) {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
+  if (ace.isTrigger && ace.autoScriptInterface) {
+    addonTriggers.push({
+      method: key,
+      id: key,
+    });
+  }
 });
 Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
   const ace = PLUGIN_INFO.Exps[key];
@@ -120,5 +141,7 @@ Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
 
 P_C.Instance = getInstanceJs(
   parentClass[PLUGIN_INFO.type].instance,
-  scriptInterface
+  scriptInterface,
+  addonTriggers,
+  C3
 );
