@@ -14,9 +14,6 @@ module.exports = {
   documentation: "https://www.construct.net",
   description: "Description",
   // icon: "icon.svg", // defaults to "icon.svg" if omitted
-  domSideScripts: [
-    // "domSide.js", // no need to include "c3runtime/" prefix
-  ],
   fileDependencies: [
     /*
     {

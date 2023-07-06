@@ -22,13 +22,10 @@ SDK.Behaviors[BEHAVIOR_INFO.id] = class extends SDK.IBehaviorBase {
       );
     }
 
-    if (BEHAVIOR_INFO.domSideScripts) {
-      this._info.SetDOMSideScripts(
-        BEHAVIOR_INFO.domSideScripts.map((s) => `c3runtime/${s}`)
-      );
-    }
-
-    if (BEHAVIOR_INFO.fileDependencies) {
+    if (
+      BEHAVIOR_INFO.fileDependencies &&
+      BEHAVIOR_INFO.fileDependencies.length
+    ) {
       BEHAVIOR_INFO.fileDependencies.forEach((file) => {
         this._info.AddFileDependency({
           ...file,
