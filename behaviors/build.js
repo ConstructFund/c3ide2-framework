@@ -21,6 +21,37 @@ function removeFilesRecursively(dir) {
   }
 }
 
+const camelCasedMap = new Map();
+
+function camelCasify(str) {
+  // If the string is already camelCased, return it
+  if (camelCasedMap.has(str)) {
+    return camelCasedMap.get(str);
+  }
+  // Replace any non-valid JavaScript identifier characters with spaces
+  let cleanedStr = str.replace(/[^a-zA-Z0-9$_]/g, " ");
+
+  // Split the string on spaces
+  let words = cleanedStr.split(" ").filter(Boolean);
+
+  // Capitalize the first letter of each word except for the first one
+  for (let i = 1; i < words.length; i++) {
+    words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+  }
+
+  // Join the words back together
+  let result = words.join("");
+
+  // If the first character is a number, prepend an underscore
+  if (!isNaN(parseInt(result.charAt(0)))) {
+    result = "_" + result;
+  }
+
+  camelCasedMap.set(str, result);
+
+  return result;
+}
+
 function getFileListFromConfig(config) {
   const files = [];
   if (config.domSideScripts) {
@@ -200,7 +231,7 @@ function acesFromConfig(config) {
           const ace = config.Cnds[key];
           const ret = {
             id: key,
-            scriptName: key,
+            scriptName: camelCasify(key),
           };
           Object.keys(ace).forEach((key) => {
             switch (key) {
@@ -245,7 +276,7 @@ function acesFromConfig(config) {
           const ace = config.Acts[key];
           const ret = {
             id: key,
-            scriptName: key,
+            scriptName: camelCasify(key),
           };
           Object.keys(ace).forEach((key) => {
             switch (key) {
@@ -290,8 +321,8 @@ function acesFromConfig(config) {
           const ace = config.Exps[key];
           const ret = {
             id: key,
-            scriptName: key,
-            expressionName: key,
+            scriptName: camelCasify(key),
+            expressionName: camelCasify(key),
           };
           Object.keys(ace).forEach((key) => {
             switch (key) {
