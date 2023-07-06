@@ -136,7 +136,7 @@ function langFromConfig(config) {
       root.properties[property.id].items = {};
       property.options.items.forEach((item) => {
         const key = Object.keys(item)[0];
-        root.properties[key].items[key] = item[key];
+        root.properties[property.id].items[key] = item[key];
       });
     } else if (property.type === "link") {
       root.properties[property.id]["link-text"] = property.linkText;
