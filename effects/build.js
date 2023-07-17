@@ -66,7 +66,14 @@ function addonFromConfig(config) {
     "must-predraw": config.mustPredraw,
     "extend-box": config.extendBox,
     "is-deprecated": config.isDeprecated,
-    parameters: config.parameters,
+    parameters: config.parameters.map((parameter) => {
+      const ret = {
+        ...parameter,
+        "initial-value": parameter.value,
+      };
+      delete ret.value;
+      return ret;
+    }),
   };
 }
 
