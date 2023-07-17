@@ -21,7 +21,8 @@ fn c3_getDepthUV(fragPos : vec2<f32>, texDepth : texture_depth_2d) -> vec2<f32>
 
 struct ShaderParams {
 
-	param1 : f32;
+	//floatParam : f32;
+	//colorParam : vec3<f32>;
 
 };
 
