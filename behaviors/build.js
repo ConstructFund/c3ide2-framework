@@ -54,11 +54,6 @@ function camelCasify(str) {
 
 function getFileListFromConfig(config) {
   const files = [];
-  if (config.domSideScripts) {
-    config.domSideScripts.forEach(function (file) {
-      files.push(`c3runtime/${file}`);
-    });
-  }
 
   if (config.fileDependencies) {
     config.fileDependencies.forEach(function (file) {
@@ -418,7 +413,6 @@ function getEditorPluginInfoFromConfig(config) {
     author: config.author,
     addonType: config.addonType,
     info: config.info,
-    domSideScripts: config.domSideScripts,
     fileDependencies: config.fileDependencies,
     icon: config.icon,
   };
@@ -478,7 +472,6 @@ fs.writeFileSync("./export/editor.js", editorWithPluginInfo);
 function getRuntimePluginInfoFromConfig(config) {
   return `const BEHAVIOR_INFO = {
     id: "${config.id}",
-    hasDomSide: ${config.domSideScripts && config.domSideScripts.length > 0},
     Acts: {
       ${Object.keys(config.Acts)
         .map((key) => {
@@ -562,23 +555,6 @@ const pluginWithPluginInfo = plugin
   .replaceAll("//<-- SCRIPT_INTERFACE -->", scriptInterface);
 
 fs.writeFileSync("./export/c3runtime/behavior.js", pluginWithPluginInfo);
-
-if (config.domSideScripts) {
-  config.domSideScripts.forEach((script) => {
-    const domSide = fs.readFileSync(
-      path.join(__dirname, "src", script),
-      "utf8"
-    );
-    const domSideWithId = domSide.replaceAll(
-      "//<-- DOM_COMPONENT_ID -->",
-      `const DOM_COMPONENT_ID = "${config.id}";`
-    );
-    fs.writeFileSync(
-      path.join(__dirname, "export", "c3runtime", script),
-      domSideWithId
-    );
-  });
-}
 
 if (config.fileDependencies) {
   config.fileDependencies.forEach((file) => {

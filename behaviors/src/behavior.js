@@ -35,11 +35,7 @@ function camelCasify(str) {
 
 C3.Behaviors[BEHAVIOR_INFO.id] = class extends C3.SDKBehaviorBase {
   constructor(opts) {
-    if (BEHAVIOR_INFO.hasDomSide) {
-      super(opts, BEHAVIOR_INFO.id);
-    } else {
-      super(opts);
-    }
+    super(opts);
   }
 
   Release() {
