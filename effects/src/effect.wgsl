@@ -5,6 +5,8 @@
 
 %%FRAGMENTINPUT_STRUCT%%
 /* input struct contains the following fields:
+fragUV : vec2<f32>
+fragPos : vec4<f32>
 fn c3_getBackUV(fragPos : vec2<f32>, texBack : texture_2d<f32>) -> vec2<f32>
 fn c3_getDepthUV(fragPos : vec2<f32>, texDepth : texture_depth_2d) -> vec2<f32>
 */
@@ -21,8 +23,8 @@ fn c3_getDepthUV(fragPos : vec2<f32>, texDepth : texture_depth_2d) -> vec2<f32>
 
 struct ShaderParams {
 
-	//floatParam : f32;
-	//colorParam : vec3<f32>;
+	//floatParam : f32,
+	//colorParam : vec3<f32>
 
 };
 
@@ -31,25 +33,21 @@ struct ShaderParams {
 
 %%C3PARAMS_STRUCT%%
 /* c3Params struct contains the following fields:
-srcStart: vec2<f32>,
-srcEnd: vec2<f32>,
-srcOriginStart: vec2<f32>,
-srcOriginEnd: vec2<f32>,
-layoutStart: vec2<f32>,
-layoutEnd: vec2<f32>,
-destStart: vec2<f32>,
-destEnd: vec2<f32>,
-devicePixelRatio: f32,
-layerScale: f32,
-layerAngle: f32,
-seconds: f32,
-zNear: f32,
-zFar: f32,
-isSrcTexRotated: u32
-*/
-// + the following functions
-
-/*
+srcStart : vec2<f32>,
+srcEnd : vec2<f32>,
+srcOriginStart : vec2<f32>,
+srcOriginEnd : vec2<f32>,
+layoutStart : vec2<f32>,
+layoutEnd : vec2<f32>,
+destStart : vec2<f32>,
+destEnd : vec2<f32>,
+devicePixelRatio : f32,
+layerScale : f32,
+layerAngle : f32,
+seconds : f32,
+zNear : f32,
+zFar : f32,
+isSrcTexRotated : u32
 fn c3_srcToNorm(p : vec2<f32>) -> vec2<f32>
 fn c3_normToSrc(p : vec2<f32>) -> vec2<f32>
 fn c3_srcOriginToNorm(p : vec2<f32>) -> vec2<f32>
@@ -76,6 +74,6 @@ fn c3_HSLtoRGB(hsl : vec3<f32>) -> vec3<f32>
 fn main(input : FragmentInput) -> FragmentOutput
 {
 	var output : FragmentOutput;
-	output.color = vec4<f32>(0.0f, 0.0f, 1.0f, 1.0f);
+	output.color = textureSample(textureFront, samplerFront, input.fragUV);
 	return output;
 }
