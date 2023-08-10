@@ -425,8 +425,9 @@ function getEditorPluginInfoFromConfig(config) {
     domSideScripts: config.domSideScripts,
     fileDependencies: config.fileDependencies,
     icon: config.icon,
+    type: config.type
   };
-  //return "const PLUGIN_INFO = " + JSON.stringify(editorPluginInfo, null, 2);
+  //return "const BEHAVIOR_INFO = " + JSON.stringify(editorPluginInfo, null, 2);
   return `const PLUGIN_INFO = {
     ...${JSON.stringify(editorPluginInfo, null, 2)},
     properties: [

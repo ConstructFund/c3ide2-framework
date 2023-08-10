@@ -102,8 +102,8 @@ Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
 const addonTriggers = [];
 
 // extend script interface with plugin conditions
-Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
-  const ace = BEHAVIOR_INFO.Cnds[key];
+Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
+  const ace = PLUGIN_INFO.Cnds[key];
   if (!ace.autoScriptInterface || ace.isStatic || ace.isLooping) return;
   if (ace.isTrigger) {
     scriptInterface.prototype[camelCasify(key)] = function (callback, ...args) {
@@ -146,8 +146,8 @@ Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
     else if (ace.handler) ace.handler.call(this, ...args);
   };
 });
-Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
-  const ace = BEHAVIOR_INFO.Cnds[key];
+Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
+  const ace = PLUGIN_INFO.Cnds[key];
   P_C.Cnds[camelCasify(key)] = function (...args) {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
