@@ -137,7 +137,7 @@ module.exports = {
       // The category of the action as it appears in the add action dialog
       category: "general",
 
-      // Forward to the runtime function name
+      // Forward to the instance function name
       forward: "_SampleAction",
       // Or specify a handler function
       handler: `function () {
@@ -229,7 +229,7 @@ module.exports = {
       // The category of the action as it appears in the add condition dialog
       category: "general",
 
-      // Forward to the runtime function name
+      // Forward to the instance function name
       forward: "_SampleAction",
       // Or specify a handler function
       handler: `function () {
@@ -326,7 +326,7 @@ module.exports = {
       // The category of the action as it appears in the expression picker
       category: "general",
 
-      // Forward to the runtime function name
+      // Forward to the instance function name
       forward: "_SampleAction",
       // Or specify a handler function
       handler: `function () {
