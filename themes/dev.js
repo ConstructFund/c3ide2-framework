@@ -3,7 +3,8 @@ const { exec } = require("child_process");
 const chokidar = require("chokidar");
 const cors = require("cors");
 
-const path = "http://localhost:3000/addon.json";
+let port = 3000;
+const path = () => `http://localhost:${port}/addon.json`;
 
 // Execute build command
 const runBuild = () => {
@@ -21,7 +22,7 @@ const runBuild = () => {
     console.log("Build complete.");
     // log addon.json file path and copy it to the clipboard
     console.log("addon.json file path:");
-    console.log(path);
+    console.log(path());
   });
 };
 
@@ -49,12 +50,27 @@ app.use(cors());
 app.use(express.static("export"));
 
 // Start the server
-app.listen(3000, () => {
-  console.log("Server is running at http://localhost:3000");
+function tryListen() {
+  app.listen(port, () => {
+    console.log("Server is running at http://localhost:" + port);
 
-  // log addon.json file path and copy it to the clipboard
-  console.log("addon.json file path:");
-  console.log(path);
-  // copy to clipboard
-  exec(`echo ${path} | clip`);
+    // log addon.json file path and copy it to the clipboard
+    console.log("addon.json file path:");
+    console.log(path);
+    // copy to clipboard
+    exec(`echo ${path} | clip`);
+  });
+}
+
+process.on("uncaughtException", function (err) {
+  if (err.code === "EADDRINUSE") {
+    console.log(`Port ${port} is already in use. Trying another port...`);
+    port++;
+    tryListen();
+  } else {
+    console.log(err);
+    process.exit(1);
+  }
 });
+
+tryListen();
