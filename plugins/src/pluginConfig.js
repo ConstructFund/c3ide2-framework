@@ -19,9 +19,10 @@ module.exports = {
   website: "https://www.construct.net",
   documentation: "https://www.construct.net",
   description: "Description",
+  // addonUrl: "https://www.construct.net/en/make-games/addons/####/XXXX", // displayed in auto-generated docs
+  // githubUrl: "https://github.com/skymen/XXXX", // displays latest release version in auto-generated docs
   // icon: "icon.svg", // defaults to "icon.svg" if omitted
-  // world, object, dom
-  type: "object",
+  type: "object",   // world, object, dom
   domSideScripts: [
     // "domSide.js", // no need to include "c3runtime/" prefix
   ],
