@@ -23,6 +23,9 @@ if (config.addonUrl && config.addonUrl !== "") {
 if(config.githubUrl && config.githubUrl !== "") {
   readme.push(`Download Latest Version : [Version: ${config.version}](${config.githubUrl}/releases/latest) <br>`);
 }
+//add link to c3ide2-framework
+readme.push(`<sub>Made using [c3ide2-framework](https://github.com/ConstructFund/c3ide2-framework) </sub><br>`);
+readme.push(``);
 
 readme.push(`## Table of Contents`);
 readme.push(`- [Usage](#usage)`);
