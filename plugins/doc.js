@@ -57,8 +57,10 @@ readme.push(
 readme.push(`## Examples Files`);
 const exampleFiles = fs.readdirSync(path.join(__dirname, "examples"));
 exampleFiles.forEach((file) => {
-  const fileName = file.split(".")[0];
-  readme.push(`- [${fileName}](./examples/${file})`);
+  if (file.endsWith(".c3p")) {
+    const fileName = file.split(".")[0];
+    readme.push(`- [${fileName}](./examples/${file})`);
+  }
 });
 
 
