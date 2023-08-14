@@ -25,6 +25,23 @@ jobs:
           npm ci
           npm run build
 
+      - name: Auto Generate Documentation
+        run: |
+          npm run doc
+      
+      - name: Commit Documentation
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions"
+          git add README.md
+          git commit -m "Update Readme.md"
+
+      - name: Push Documentation
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+
       - name: Get last modified file
         id: getfile
         run: |

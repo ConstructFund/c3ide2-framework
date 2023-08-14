@@ -7,7 +7,7 @@ function generateMDLinkFromText(text) {
   return text.replace(/ /g, "-").toLowerCase();
 }
 
-const config = require("./src/pluginConfig.js");
+const config = require("./src/behaviorConfig.js");
 
 const readme = [];
 readme.push(`# ${config.name} <br>`);
