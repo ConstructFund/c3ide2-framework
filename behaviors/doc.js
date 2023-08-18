@@ -7,12 +7,29 @@ function generateMDLinkFromText(text) {
   return text.replace(/ /g, "-").toLowerCase();
 }
 
+function getFileWithTypeFromFolder(path, fileTypes){
+  const results = [];
+  const files = fs.readdirSync(path);
+  files.forEach((file) => {
+    const ext = getFileExtension(file);
+    if(fileTypes.includes(ext)){
+      results.push(file);
+    };
+  });
+  return results;
+}
+
+function getFileExtension(filename) {
+  return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+}
+
 const config = require("./src/behaviorConfig.js");
 
 const readme = [];
+readme.push(`<img src="./src/icon.svg" width="100" /><br>`);
 readme.push(`# ${config.name} <br>`);
 readme.push(`${config.description} <br>`);
-readme.push(``);
+readme.push("<br>");
 readme.push(`Author: ${config.author} <br>`);
 if (config.website && config.website !== "" && config.website !== "https://www.construct.net") {
   readme.push(`Website: ${config.website} <br>`)
@@ -35,7 +52,7 @@ readme.push(`- [Actions](#actions)`);
 readme.push(`- [Conditions](#conditions)`);
 readme.push(`- [Expressions](#expressions)`);
 
-
+readme.push(`---`);
 readme.push(`## Usage`);
 readme.push(`To build the addon, run the following commands:`);
 readme.push(``);
@@ -56,17 +73,35 @@ readme.push(
   `The main files you may want to look at would be instance.js and scriptInterface.js`
 );
 
-
+readme.push(``);
 readme.push(`## Examples Files`);
-const exampleFiles = fs.readdirSync(path.join(__dirname, "examples"));
-exampleFiles.forEach((file) => {
-  if (file.endsWith(".c3p")) {
-    const fileName = file.split(".")[0];
-    readme.push(`- [${fileName}](./examples/${file})`);
-  }
-});
+const exampleFolderPath = path.join(__dirname, "examples");
+if(fs.existsSync(exampleFolderPath)) {
+  //get all files in examples folder
+  const exampleFiles = getFileWithTypeFromFolder(exampleFolderPath, ["c3p"]);
+  const images = getFileWithTypeFromFolder(exampleFolderPath, ["png", "gif", "jpeg"]);
+
+  
+  exampleFiles.forEach((file) => {
+      const fileName = file.split(".")[0];
+      readme.push(`- [${fileName}](./examples/${file})`);
+
+      //add images
+      images.forEach((image) => {
+        const imageName = image.split(".")[0];
+        if(imageName === fileName) {
+          // display the a small version of the image on a new line
+          readme.push(`</br>`);
+          readme.push(`<img src="./examples/${image}" width="200" />`);
+        }
+      });
+      readme.push(`</br>`);
+  });
+}
 
 
+readme.push(``);
+readme.push(`---`);
 readme.push(`## Properties`);
 readme.push(`| Property Name | Description`);
 readme.push(`| --- | --- |`);
@@ -77,11 +112,10 @@ config.properties.forEach((property) => {
   ); 
 });
 readme.push(`---`);
-
 config.properties.forEach((property) => {
   readme.push(`### ${property.name}`);
-  readme.push(`**Description:** ${property.desc} </br>`);
-  readme.push(`**Type:** ${property.type}`);
+  readme.push(`**Description:** <br> ${property.desc} </br>`);
+  readme.push(`**Type:** <br> ${property.type}`);
   if (property.type === "combo") {
     readme.push(`**Options:**`);
     property.options.items.forEach((item) => {
@@ -93,6 +127,8 @@ config.properties.forEach((property) => {
   }
 });
 
+readme.push(``);
+readme.push(`---`);
 readme.push(`## Actions`);
 readme.push(`| Action | Description |`);
 readme.push(`| --- | --- |`);
@@ -108,10 +144,10 @@ readme.push(`---`);
 Object.keys(config.Acts).forEach((key) => {
   const action = config.Acts[key];
   readme.push(`### ${action.listName}`);
-  readme.push(`**Description:** ${action.description} </br>`);
+  readme.push(`**Description:** <br> ${action.description} </br>`);
 
   if (action.isAsync) {
-    readme.push(`**Is Async:** ${action.isAsync} </br>`);
+    readme.push(`**Is Async:** <br> ${action.isAsync} </br>`);
   } 
 
   if(action.params.length > 0){
@@ -127,7 +163,8 @@ Object.keys(config.Acts).forEach((key) => {
   }
 });
 
-
+readme.push(``);
+readme.push(`---`);
 readme.push(`## Conditions`);
 readme.push(`| Condition | Description |`);
 readme.push(`| --- | --- |`);
@@ -143,12 +180,12 @@ readme.push(`---`);
 Object.keys(config.Cnds).forEach((key) => {
   const condition = config.Cnds[key];
   readme.push(`### ${condition.listName}`);
-  readme.push(`**Description:** ${condition.description} </br>`);
+  readme.push(`**Description:** <br> ${condition.description} </br>`);
   if (condition.isTrigger) {
-    readme.push(`**Is Trigger:** ${condition.isTrigger} </br>`);
+    readme.push(`**Is Trigger:** <br> ${condition.isTrigger} </br>`);
   }
   if(condition.islooping) {
-    readme.push(`**Is Looping:** ${condition.islooping} </br>`);
+    readme.push(`**Is Looping:** <br> ${condition.islooping} </br>`);
   }
 
   if(condition.params.length > 0) {
@@ -165,6 +202,7 @@ Object.keys(config.Cnds).forEach((key) => {
 });
 
 readme.push(``);
+readme.push(`---`);
 readme.push(`## Expressions`);
 readme.push(`| Expression | Description |`);
 readme.push(`| --- | --- |`);
@@ -180,8 +218,8 @@ readme.push(`---`);
 Object.keys(config.Exps).forEach((key) => {
   const expression = config.Exps[key];
   readme.push(`### ${key}`);
-  readme.push(`**Description:** ${expression.description} </br>`);
-  readme.push(`**Return Type:** ${expression.returnType} </br>`);
+  readme.push(`**Description:** <br> ${expression.description} </br>`);
+  readme.push(`**Return Type:** <br> ${expression.returnType} </br>`);
   if(expression.isVariadicParam) {
     readme.push(`**Is Variadic Param:** ${expression.isVariadicParam} </br>`);
   }
