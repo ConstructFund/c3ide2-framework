@@ -21,14 +21,28 @@ fn c3_getDepthUV(fragPos : vec2<f32>, texDepth : texture_depth_2d) -> vec2<f32>
 //%//%SAMPLERDEPTH_BINDING%//% var samplerDepth : sampler;
 //%//%TEXTUREDEPTH_BINDING%//% var textureDepth : texture_depth_2d;
 
+/* Uniforms are:
+uAngle: angle of the shine, 0.0-360.0
+uIntensity: how hard to mix the shine with the image, 0.0-1.0
+uColor: the color of the shine, vec4
+uSize: the size of the shine in percent based on diameter, 0.0-1.0
+uProgress: the progress of the shine, 0.0-1.0
+uHardness: how hard the shine is, 0 is smooth, 1 is a hard edge , 0.0-1.0
+ */
+
+//<-- shaderParams -->
+/* gets replaced with:
+
 struct ShaderParams {
 
-	//floatParam : f32,
-	//colorParam : vec3<f32>
+	floatParam : f32,
+	colorParam : vec3<f32>,
+	// etc.
 
 };
 
-%%SHADERPARAMS_BINDING%% var<uniform> shaderParams : ShaderParams;
+%//%SHADERPARAMS_BINDING%//% var<uniform> shaderParams : ShaderParams;
+*/
 
 
 %%C3PARAMS_STRUCT%%
