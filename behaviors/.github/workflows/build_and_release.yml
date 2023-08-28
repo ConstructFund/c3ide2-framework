@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build-and-release:
@@ -33,8 +30,12 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "GitHub Actions"
-          git add README.md
-          git commit -m "Update Readme.md"
+          if [[ -n $(git status -s) ]]; then
+            git add README.md
+            git commit -m "Update Readme.md"
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Push Documentation
         uses: ad-m/github-push-action@master
@@ -62,3 +63,47 @@ jobs:
           name: v${{ steps.getfile.outputs.version }}
           allowUpdates: true
           makeLatest: true
+      
+      - name: Check if variables are set
+        id: check
+        run: |
+          publish=true
+          if [[ -z "${{ secrets.C3_AUTH_USER }}" ]]; then
+            echo "C3 AUTH_USER is not set. skip publishing."
+            publish=false
+          fi
+          if [[ -z "${{ secrets.C3_AUTH_PASSWORD }}" ]]; then
+            echo "C3 AUTH_PASSWORD is not set. skip publishing."
+            publish=false
+          fi
+          echo "publish=$publish" >> $GITHUB_OUTPUT
+
+      - name: Install publish dependencies
+        if: steps.check.outputs.publish == 'true'
+        run: |
+          npm install -g c3addon
+            
+      - name: Get Addon Url
+        if: steps.check.outputs.publish == 'true'
+        id: url
+        run: |
+            url=$(grep -oP 'addonUrl:\s?"\K[^"]*' src/behaviorConfig.js | cut -d '"' -f 1)
+            echo "Addon Url: $url"
+            if [[ -z "$url" ]]; then
+              echo "Addon Url is not set. skip publishing."
+              exit 1
+            fi
+            echo "url=$url" >> $GITHUB_OUTPUT
+        
+      - name: Publish to Construct 3
+        if: steps.check.outputs.publish == 'true'
+        run: |
+            c3addon publish \
+              --addonUrl '${{steps.url.outputs.url}}' \
+              --authUser ${{ secrets.C3_AUTH_USER }} \
+              --authPassword ${{ secrets.C3_AUTH_PASSWORD }} \
+              --uploadFile dist/${{ steps.getfile.outputs.filename }} \
+              --version ${{ steps.getfile.outputs.version }} \
+              --releaseNotes 'Released via GitHub Actions'
+
+

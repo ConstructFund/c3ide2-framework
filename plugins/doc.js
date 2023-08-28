@@ -3,10 +3,6 @@ const path = require("path");
 
 const camelCasedMap = new Map();
 
-function generateMDLinkFromText(text) {
-  return text.replace(/ /g, "-").toLowerCase();
-}
-
 function getFileWithTypeFromFolder(path, fileTypes){
   const results = [];
   const files = fs.readdirSync(path);
@@ -23,10 +19,22 @@ function getFileExtension(filename) {
   return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
 }
 
+function getCoverImage() {
+  const exampleFolderPath = path.join(__dirname, "examples");
+  const images = getFileWithTypeFromFolder(exampleFolderPath, ["png", "gif", "jpeg"]);
+  for(let i = 0; i < images.length; i++) {
+    const imageName = images[i].split(".")[0];
+    if(imageName === "cover") {
+      return  `<img src="./examples/${images[i]}" width="150" /><br>`;
+    }
+  }
+  return "<img src=\"./src/icon.svg\" width=\"100\" /><br>";
+}
+
 const config = require("./src/pluginConfig.js");
 
 const readme = [];
-readme.push(`<img src="./src/icon.svg" width="100" /><br>`);
+readme.push(getCoverImage());
 readme.push(`# ${config.name} <br>`);
 readme.push(`${config.description} <br>`);
 readme.push("<br>");
@@ -89,9 +97,10 @@ if(fs.existsSync(exampleFolderPath)) {
       //add images
       images.forEach((image) => {
         const imageName = image.split(".")[0];
-        if(imageName === fileName) {
+        readme.push(`</br>`);
+        //check if image contains the name of the example file
+        if (imageName.includes(fileName)) {
           // display the a small version of the image on a new line
-          readme.push(`</br>`);
           readme.push(`<img src="./examples/${image}" width="200" />`);
         }
       });
@@ -103,138 +112,162 @@ if(fs.existsSync(exampleFolderPath)) {
 readme.push(``);
 readme.push(`---`);
 readme.push(`## Properties`);
-readme.push(`| Property Name | Description`);
-readme.push(`| --- | --- |`);
+readme.push(`| Property Name | Description | Type |`);
+readme.push(`| --- | --- | --- |`);
 
 config.properties.forEach((property) => {
   readme.push(
-    `| [${property.name}](#${generateMDLinkFromText(property.name)}) | ${property.desc} |`
+    `| ${property.name} | ${property.desc} | ${property.type} |`
   ); 
 });
-readme.push(`---`);
-config.properties.forEach((property) => {
-  readme.push(`### ${property.name}`);
-  readme.push(`**Description:** <br> ${property.desc} </br>`);
-  readme.push(`**Type:** <br> ${property.type}`);
-  if (property.type === "combo") {
-    readme.push(`**Options:**`);
-    property.options.items.forEach((item) => {
-      const key = Object.keys(item)[0];
-      readme.push(`- ${key}: ${item[key]}`);
-    });
-  } else if (property.type === "link") {
-    readme.push(`**Link Text:** ${property.linkText}`);
-  }
-});
+readme.push(``);
+// config.properties.forEach((property) => {
+//   readme.push(`### ${property.name}`);
+//   readme.push(`**Description:** <br> ${property.desc} </br>`);
+//   readme.push(`**Type:** <br> ${property.type}`);
+//   if (property.type === "combo") {
+//     readme.push(`**Options:**`);
+//     property.options.items.forEach((item) => {
+//       const key = Object.keys(item)[0];
+//       readme.push(`- ${key}: ${item[key]}`);
+//     });
+//   } else if (property.type === "link") {
+//     readme.push(`**Link Text:** ${property.linkText}`);
+//   }
+// });
 
 readme.push(``);
 readme.push(`---`);
 readme.push(`## Actions`);
-readme.push(`| Action | Description |`);
-readme.push(`| --- | --- |`);
+readme.push(`| Action | Description | Params`);
+readme.push(`| --- | --- | --- |`);
 
 Object.keys(config.Acts).forEach((key) => {
   const action = config.Acts[key];
-  readme.push(
-    `| [${action.listName}](#${generateMDLinkFromText(action.listName)}) | ${action.description} |`
-  );
-});
-readme.push(`---`);
 
-Object.keys(config.Acts).forEach((key) => {
-  const action = config.Acts[key];
-  readme.push(`### ${action.listName}`);
-  readme.push(`**Description:** <br> ${action.description} </br>`);
-
-  if (action.isAsync) {
-    readme.push(`**Is Async:** <br> ${action.isAsync} </br>`);
-  } 
-
-  if(action.params.length > 0){
-    readme.push(`#### Parameters:`);
-    // write parameters to indented table, with three columns (name, type, description)
-    readme.push(`| Name | Type | Description |`);
-    readme.push(`| --- | --- | --- |`);
+  let paramString = "";
+  if (action.params.length > 0) {
     action.params.forEach((param) => {
-      readme.push(
-        `| ${param.name} | ${param.type} | ${param.desc} |`
-      );
+      paramString += `${param.name}             *(${param.type})* <br>`;
     });
   }
+
+  readme.push(
+    `| ${action.listName} | ${action.description} | ${paramString} |`
+  );
 });
+readme.push(``);
+
+// Object.keys(config.Acts).forEach((key) => {
+//   const action = config.Acts[key];
+//   readme.push(`### ${action.listName}`);
+//   readme.push(`**Description:** <br> ${action.description} </br>`);
+
+//   if (action.isAsync) {
+//     readme.push(`**Is Async:** <br> ${action.isAsync} </br>`);
+//   } 
+
+//   if(action.params.length > 0){
+//     readme.push(`#### Parameters:`);
+//     // write parameters to indented table, with three columns (name, type, description)
+//     readme.push(`| Name | Type | Description |`);
+//     readme.push(`| --- | --- | --- |`);
+//     action.params.forEach((param) => {
+//       readme.push(
+//         `| ${param.name} | ${param.type} | ${param.desc} |`
+//       );
+//     });
+//   }
+// });
 
 readme.push(``);
 readme.push(`---`);
 readme.push(`## Conditions`);
-readme.push(`| Condition | Description |`);
-readme.push(`| --- | --- |`);
+readme.push(`| Condition | Description | Params`);
+readme.push(`| --- | --- | --- |`);
 
 Object.keys(config.Cnds).forEach((key) => {
   const condition = config.Cnds[key];
-  readme.push(
-    `| [${condition.listName}](#${generateMDLinkFromText(condition.listName)}) | ${condition.description} |`
-  );
-});
-readme.push(`---`);
 
-Object.keys(config.Cnds).forEach((key) => {
-  const condition = config.Cnds[key];
-  readme.push(`### ${condition.listName}`);
-  readme.push(`**Description:** <br> ${condition.description} </br>`);
-  if (condition.isTrigger) {
-    readme.push(`**Is Trigger:** <br> ${condition.isTrigger} </br>`);
-  }
-  if(condition.islooping) {
-    readme.push(`**Is Looping:** <br> ${condition.islooping} </br>`);
-  }
-
-  if(condition.params.length > 0) {
-    readme.push(`#### Parameters:`);
-    // write parameters to indented table, with three columns (name, type, description)
-    readme.push(`| Name | Type | Description |`);
-    readme.push(`| --- | --- | --- |`);
+  let paramString = "";
+  if (condition.params.length > 0) {
     condition.params.forEach((param) => {
-      readme.push(
-        `| ${param.name} | ${param.type} | ${param.desc} |`
-      );
+      paramString += `${param.name} *(${param.type})* <br>`;
     });
   }
+
+  readme.push(
+    `| ${condition.listName} | ${condition.description} | ${paramString} |`
+  );
 });
+readme.push(``);
+
+// Object.keys(config.Cnds).forEach((key) => {
+//   const condition = config.Cnds[key];
+//   readme.push(`### ${condition.listName}`);
+//   readme.push(`**Description:** <br> ${condition.description} </br>`);
+//   if (condition.isTrigger) {
+//     readme.push(`**Is Trigger:** <br> ${condition.isTrigger} </br>`);
+//   }
+//   if(condition.islooping) {
+//     readme.push(`**Is Looping:** <br> ${condition.islooping} </br>`);
+//   }
+
+//   if(condition.params.length > 0) {
+//     readme.push(`#### Parameters:`);
+//     // write parameters to indented table, with three columns (name, type, description)
+//     readme.push(`| Name | Type | Description |`);
+//     readme.push(`| --- | --- | --- |`);
+//     condition.params.forEach((param) => {
+//       readme.push(
+//         `| ${param.name} | ${param.type} | ${param.desc} |`
+//       );
+//     });
+//   }
+// });
 
 readme.push(``);
 readme.push(`---`);
 readme.push(`## Expressions`);
-readme.push(`| Expression | Description |`);
-readme.push(`| --- | --- |`);
+readme.push(`| Expression | Description | Return Type | Params`);
+readme.push(`| --- | --- | --- | --- |`);
 
 Object.keys(config.Exps).forEach((key) => {
   const expression = config.Exps[key];
-  readme.push(
-    `| [${key}](#${generateMDLinkFromText(key)}) | ${expression.description} |`
-  );
-});
-readme.push(`---`);
 
-Object.keys(config.Exps).forEach((key) => {
-  const expression = config.Exps[key];
-  readme.push(`### ${key}`);
-  readme.push(`**Description:** <br> ${expression.description} </br>`);
-  readme.push(`**Return Type:** <br> ${expression.returnType} </br>`);
-  if(expression.isVariadicParam) {
-    readme.push(`**Is Variadic Param:** ${expression.isVariadicParam} </br>`);
-  }
-  if(expression.params.length > 0) {
-    readme.push(`#### Parameters:`);
-    // write parameters to indented table, with three columns (name, type, description)
-    readme.push(`| Name | Type | Description |`);
-    readme.push(`| --- | --- | --- |`);
+  let paramString = "";
+  if (expression.params.length > 0) {
     expression.params.forEach((param) => {
-      readme.push(
-        `| ${param.name} | ${param.type} | ${param.desc} |`
-      );
+      paramString += `${param.name} *(${param.type})* <br>`;
     });
   }
+
+  readme.push(
+    `| ${key} | ${expression.description} | ${expression.returnType} | ${paramString} | `
+  );
 });
+readme.push(``);
+
+// Object.keys(config.Exps).forEach((key) => {
+//   const expression = config.Exps[key];
+//   readme.push(`### ${key}`);
+//   readme.push(`**Description:** <br> ${expression.description} </br>`);
+//   readme.push(`**Return Type:** <br> ${expression.returnType} </br>`);
+//   if(expression.isVariadicParam) {
+//     readme.push(`**Is Variadic Param:** ${expression.isVariadicParam} </br>`);
+//   }
+//   if(expression.params.length > 0) {
+//     readme.push(`#### Parameters:`);
+//     // write parameters to indented table, with three columns (name, type, description)
+//     readme.push(`| Name | Type | Description |`);
+//     readme.push(`| --- | --- | --- |`);
+//     expression.params.forEach((param) => {
+//       readme.push(
+//         `| ${param.name} | ${param.type} | ${param.desc} |`
+//       );
+//     });
+//   }
+// });
 
 
 fs.writeFileSync(path.join(__dirname, "README.md"), readme.join("\n"));
