@@ -59,7 +59,7 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
     this._info.SetProperties(
       (PLUGIN_INFO.properties || []).map(
         (prop) =>
-          new SDK.PluginProperty(prop.type, prop.id, prop.value, prop.options)
+          new SDK.PluginProperty(prop.type, prop.id, prop.options)
       )
     );
     SDK.Lang.PopContext(); // .properties
