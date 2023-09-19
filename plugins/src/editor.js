@@ -24,8 +24,8 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
       );
     }
 
-    if (PLUGIN_INFO.defaultImageUrl) {
-      this._info.SetDefaultImageURL(`c3runtime/${PLUGIN_INFO.defaultImageUrl}`);
+    if (PLUGIN_INFO.info.defaultImageUrl) {
+      this._info.SetDefaultImageURL(`c3runtime/${PLUGIN_INFO.info.defaultImageUrl}`);
     }
 
     if (PLUGIN_INFO.domSideScripts) {
