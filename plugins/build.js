@@ -66,8 +66,8 @@ function getFileListFromConfig(config) {
     });
   }
 
-  if (config.defaultImageUrl) {
-    files.push(`c3runtime/${config.defaultImageUrl}`);
+  if (config.info.defaultImageUrl) {
+    files.push(`c3runtime/${config.info.defaultImageUrl}`);
   }
 
   return files;
@@ -595,10 +595,10 @@ if (config.fileDependencies) {
   });
 }
 
-if (config.defaultImageUrl) {
+if (config.info.defaultImageUrl) {
   fs.copyFileSync(
-    path.join(__dirname, "src", config.defaultImageUrl),
-    path.join(__dirname, "export", "c3runtime", config.defaultImageUrl)
+    path.join(__dirname, "src", config.info.defaultImageUrl),
+    path.join(__dirname, "export", "c3runtime", config.info/defaultImageUrl)
   );
 }
 
