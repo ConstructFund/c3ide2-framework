@@ -11,7 +11,8 @@
   "scripts": {
     "build": "node build.js",
     "dev": "node dev.js",
-    "doc": "node doc.js"
+    "doc": "node doc.js",
+    "validate": "node validate.js" 
   },
   "repository": {
     "type": "git",
