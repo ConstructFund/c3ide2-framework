@@ -66,10 +66,17 @@ const scriptInterface = getScriptInterface(self.IBehaviorInstance, map);
 Object.keys(BEHAVIOR_INFO.Acts).forEach((key) => {
   const ace = BEHAVIOR_INFO.Acts[key];
   if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[camelCasify(key)] = function (...args) {
-    const sdkInst = map.get(this);
-    B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-  };
+  if (ace.isAsync) {
+    scriptInterface.prototype[camelCasify(key)] = async function (...args) {
+      const sdkInst = map.get(this);
+      await B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
+    };
+  } else {
+    scriptInterface.prototype[camelCasify(key)] = function (...args) {
+      const sdkInst = map.get(this);
+      B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
+    };
+  }
 });
 
 const addonTriggers = [];

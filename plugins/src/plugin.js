@@ -93,10 +93,17 @@ const scriptInterface = getScriptInterface(
 Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
   const ace = PLUGIN_INFO.Acts[key];
   if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[camelCasify(key)] = function (...args) {
-    const sdkInst = map.get(this);
-    P_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-  };
+  if (ace.isAsync) {
+    scriptInterface.prototype[camelCasify(key)] = async function (...args) {
+      const sdkInst = map.get(this);
+      await P_C.Acts[camelCasify(key)].call(sdkInst, ...args);
+    };
+  } else {
+    scriptInterface.prototype[camelCasify(key)] = function (...args) {
+      const sdkInst = map.get(this);
+      P_C.Acts[camelCasify(key)].call(sdkInst, ...args);
+    };
+  }
 });
 
 const addonTriggers = [];
