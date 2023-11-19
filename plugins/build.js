@@ -156,7 +156,7 @@ function langFromConfig(config) {
       description: action.description,
       params: {},
     };
-
+    action.params = action.params || [];
     action.params.forEach((param) => {
       root.actions[key].params[param.id] = {
         name: param.name,
@@ -181,7 +181,7 @@ function langFromConfig(config) {
       description: condition.description,
       params: {},
     };
-
+    condition.params = condition.params || [];
     condition.params.forEach((param) => {
       root.conditions[key].params[param.id] = {
         name: param.name,
@@ -205,7 +205,7 @@ function langFromConfig(config) {
       description: expression.description,
       params: {},
     };
-
+    expression.params = expression.params || [];
     expression.params.forEach((param) => {
       root.expressions[key].params[param.id] = {
         name: param.name,
@@ -425,7 +425,7 @@ function getEditorPluginInfoFromConfig(config) {
     domSideScripts: config.domSideScripts,
     fileDependencies: config.fileDependencies,
     icon: config.icon,
-    type: config.type
+    type: config.type,
   };
   //return "const BEHAVIOR_INFO = " + JSON.stringify(editorPluginInfo, null, 2);
   return `const PLUGIN_INFO = {
@@ -598,7 +598,7 @@ if (config.fileDependencies) {
 if (config.info.defaultImageUrl) {
   fs.copyFileSync(
     path.join(__dirname, "src", config.info.defaultImageUrl),
-    path.join(__dirname, "export", "c3runtime", config.info/defaultImageUrl)
+    path.join(__dirname, "export", "c3runtime", config.info / defaultImageUrl)
   );
 }
 

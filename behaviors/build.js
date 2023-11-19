@@ -147,7 +147,7 @@ function langFromConfig(config) {
       description: action.description,
       params: {},
     };
-
+    action.params = action.params || [];
     action.params.forEach((param) => {
       root.actions[key].params[param.id] = {
         name: param.name,
@@ -172,7 +172,7 @@ function langFromConfig(config) {
       description: condition.description,
       params: {},
     };
-
+    condition.params = condition.params || [];
     condition.params.forEach((param) => {
       root.conditions[key].params[param.id] = {
         name: param.name,
@@ -197,6 +197,7 @@ function langFromConfig(config) {
       params: {},
     };
 
+    expression.params = expression.params || [];
     expression.params.forEach((param) => {
       root.expressions[key].params[param.id] = {
         name: param.name,

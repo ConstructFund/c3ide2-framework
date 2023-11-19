@@ -3,32 +3,36 @@ const path = require("path");
 
 const camelCasedMap = new Map();
 
-function getFileWithTypeFromFolder(path, fileTypes){
+function getFileWithTypeFromFolder(path, fileTypes) {
   const results = [];
   const files = fs.readdirSync(path);
   files.forEach((file) => {
     const ext = getFileExtension(file);
-    if(fileTypes.includes(ext)){
+    if (fileTypes.includes(ext)) {
       results.push(file);
-    };
+    }
   });
   return results;
 }
 
 function getFileExtension(filename) {
-  return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
+  return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
 }
 
 function getCoverImage() {
   const exampleFolderPath = path.join(__dirname, "examples");
-  const images = getFileWithTypeFromFolder(exampleFolderPath, ["png", "gif", "jpeg"]);
-  for(let i = 0; i < images.length; i++) {
+  const images = getFileWithTypeFromFolder(exampleFolderPath, [
+    "png",
+    "gif",
+    "jpeg",
+  ]);
+  for (let i = 0; i < images.length; i++) {
     const imageName = images[i].split(".")[0];
-    if(imageName === "cover") {
-      return  `<img src="./examples/${images[i]}" width="150" /><br>`;
+    if (imageName === "cover") {
+      return `<img src="./examples/${images[i]}" width="150" /><br>`;
     }
   }
-  return "<img src=\"./src/icon.svg\" width=\"100\" /><br>";
+  return '<img src="./src/icon.svg" width="100" /><br>';
 }
 
 const config = require("./src/pluginConfig.js");
@@ -39,17 +43,25 @@ readme.push(`# ${config.name} <br>`);
 readme.push(`${config.description} <br>`);
 readme.push("<br>");
 readme.push(`Author: ${config.author} <br>`);
-if (config.website && config.website !== "" && config.website !== "https://www.construct.net") {
-  readme.push(`Website: ${config.website} <br>`)
+if (
+  config.website &&
+  config.website !== "" &&
+  config.website !== "https://www.construct.net"
+) {
+  readme.push(`Website: ${config.website} <br>`);
 }
 if (config.addonUrl && config.addonUrl !== "") {
   readme.push(`Addon Url: ${config.addonUrl} <br>`);
 }
-if(config.githubUrl && config.githubUrl !== "") {
-  readme.push(`Download Latest Version : [Version: ${config.version}](${config.githubUrl}/releases/latest) <br>`);
+if (config.githubUrl && config.githubUrl !== "") {
+  readme.push(
+    `Download Latest Version : [Version: ${config.version}](${config.githubUrl}/releases/latest) <br>`
+  );
 }
 //add link to c3ide2-framework
-readme.push(`<sub>Made using [c3ide2-framework](https://github.com/ConstructFund/c3ide2-framework) </sub><br>`);
+readme.push(
+  `<sub>Made using [c3ide2-framework](https://github.com/ConstructFund/c3ide2-framework) </sub><br>`
+);
 readme.push(``);
 
 readme.push(`## Table of Contents`);
@@ -76,7 +88,9 @@ readme.push(`npm i`);
 readme.push(`node ./dev.js`);
 readme.push(`\`\`\``);
 readme.push(``);
-readme.push(`The build uses the pluginConfig file to generate everything else.`);
+readme.push(
+  `The build uses the pluginConfig file to generate everything else.`
+);
 readme.push(
   `The main files you may want to look at would be instance.js and scriptInterface.js`
 );
@@ -84,30 +98,32 @@ readme.push(
 readme.push(``);
 readme.push(`## Examples Files`);
 const exampleFolderPath = path.join(__dirname, "examples");
-if(fs.existsSync(exampleFolderPath)) {
+if (fs.existsSync(exampleFolderPath)) {
   //get all files in examples folder
   const exampleFiles = getFileWithTypeFromFolder(exampleFolderPath, ["c3p"]);
-  const images = getFileWithTypeFromFolder(exampleFolderPath, ["png", "gif", "jpeg"]);
+  const images = getFileWithTypeFromFolder(exampleFolderPath, [
+    "png",
+    "gif",
+    "jpeg",
+  ]);
 
-  
   exampleFiles.forEach((file) => {
-      const fileName = file.split(".")[0];
-      readme.push(`- [${fileName}](./examples/${file})`);
+    const fileName = file.split(".")[0];
+    readme.push(`- [${fileName}](./examples/${file})`);
 
-      //add images
-      images.forEach((image) => {
-        const imageName = image.split(".")[0];
-        readme.push(`</br>`);
-        //check if image contains the name of the example file
-        if (imageName.includes(fileName)) {
-          // display the a small version of the image on a new line
-          readme.push(`<img src="./examples/${image}" width="200" />`);
-        }
-      });
+    //add images
+    images.forEach((image) => {
+      const imageName = image.split(".")[0];
       readme.push(`</br>`);
+      //check if image contains the name of the example file
+      if (imageName.includes(fileName)) {
+        // display the a small version of the image on a new line
+        readme.push(`<img src="./examples/${image}" width="200" />`);
+      }
+    });
+    readme.push(`</br>`);
   });
 }
-
 
 readme.push(``);
 readme.push(`---`);
@@ -116,9 +132,7 @@ readme.push(`| Property Name | Description | Type |`);
 readme.push(`| --- | --- | --- |`);
 
 config.properties.forEach((property) => {
-  readme.push(
-    `| ${property.name} | ${property.desc} | ${property.type} |`
-  ); 
+  readme.push(`| ${property.name} | ${property.desc} | ${property.type} |`);
 });
 readme.push(``);
 // config.properties.forEach((property) => {
@@ -146,7 +160,7 @@ Object.keys(config.Acts).forEach((key) => {
   const action = config.Acts[key];
 
   let paramString = "";
-  if (action.params.length > 0) {
+  if (action.params) {
     action.params.forEach((param) => {
       paramString += `${param.name}             *(${param.type})* <br>`;
     });
@@ -165,7 +179,7 @@ readme.push(``);
 
 //   if (action.isAsync) {
 //     readme.push(`**Is Async:** <br> ${action.isAsync} </br>`);
-//   } 
+//   }
 
 //   if(action.params.length > 0){
 //     readme.push(`#### Parameters:`);
@@ -190,7 +204,7 @@ Object.keys(config.Cnds).forEach((key) => {
   const condition = config.Cnds[key];
 
   let paramString = "";
-  if (condition.params.length > 0) {
+  if (condition.params) {
     condition.params.forEach((param) => {
       paramString += `${param.name} *(${param.type})* <br>`;
     });
@@ -236,7 +250,7 @@ Object.keys(config.Exps).forEach((key) => {
   const expression = config.Exps[key];
 
   let paramString = "";
-  if (expression.params.length > 0) {
+  if (expression.params) {
     expression.params.forEach((param) => {
       paramString += `${param.name} *(${param.type})* <br>`;
     });
@@ -269,6 +283,4 @@ readme.push(``);
 //   }
 // });
 
-
 fs.writeFileSync(path.join(__dirname, "README.md"), readme.join("\n"));
-
