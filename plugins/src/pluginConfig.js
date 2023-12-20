@@ -198,7 +198,7 @@ module.exports = {
             - "objinstancevar"
 
           // The default value of the parameter. Can be omitted if the type is not a string, number, any, boolean or combo.
-          value: "the default value of the parameter",
+          initialValue: "the default value of the parameter",
 
           // Only for type "combo"
           items: [
@@ -295,7 +295,7 @@ module.exports = {
             - "objinstancevar"
 
           // The default value of the parameter. Can be omitted if the type is not a string, number, any, boolean or combo.
-          value: "the default value of the parameter",
+          initialValue: "the default value of the parameter",
 
           // Only for type "combo"
           items: [
