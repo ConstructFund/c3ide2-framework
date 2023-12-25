@@ -91,7 +91,7 @@ async function processConfigOverrides(dirNames, selectedFolders) {
   const pluginConfigPath = path.join(commonPath, "src", "pluginConfig.js");
   let pluginConfigContents = await fs.readFile(pluginConfigPath, "utf8");
   for (const folder of dirNames) {
-    console.log("Adding opt-in", folder);
+    if (selectedFolders.includes(folder)) console.log("Adding opt-in", folder);
     const pluginOverridesPath = path.join(
       optInsPath,
       folder,
