@@ -9,10 +9,10 @@
   "description": "To build the addon, run",
   "version": "1.0.0",
   "scripts": {
-    "build": "node build.js",
+    "build": "node build.js --buildWrapperExtension",
     "dev": "node dev.js",
     "doc": "node doc.js",
-    "validate": "node validate.js" 
+    "validate": "node validate.js"
   },
   "repository": {
     "type": "git",

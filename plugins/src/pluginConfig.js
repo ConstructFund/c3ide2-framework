@@ -22,10 +22,22 @@ module.exports = {
   // addonUrl: "https://www.construct.net/en/make-games/addons/####/XXXX", // displayed in auto-generated docs
   // githubUrl: "https://github.com/skymen/XXXX", // displays latest release version in auto-generated docs
   // icon: "icon.svg", // defaults to "icon.svg" if omitted
-  type: "object",   // world, object, dom
+  type: "object", // world, object, dom
   domSideScripts: [
     // "domSide.js", // no need to include "c3runtime/" prefix
   ],
+  extensionScript: {
+    enabled: false, // set to false to disable the extension script
+    watch: false, // set to true to enable live reload on changes during development
+    targets: [
+      "x86",
+      "x64",
+      // "ARM64", // Disabled for now because the provided base project doesn't support it
+    ],
+
+    // you don't need to change this, the build step will rename the dll for you. Only change this if you change the name of the dll exported by Visual Studio
+    name: "MyExtension",
+  },
   fileDependencies: [
     /*
     {

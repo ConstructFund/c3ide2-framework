@@ -54,14 +54,6 @@ const parentClass = {
 C3.Plugins[PLUGIN_INFO.id] = class extends (
   parentClass[PLUGIN_INFO.type].plugin
 ) {
-  constructor(opts) {
-    if (PLUGIN_INFO.hasDomSide) {
-      super(opts, PLUGIN_INFO.id);
-    } else {
-      super(opts);
-    }
-  }
-
   Release() {
     super.Release();
   }
@@ -177,9 +169,34 @@ Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
 
 //<-- INSTANCE -->
 
-P_C.Instance = getInstanceJs(
-  parentClass[PLUGIN_INFO.type].instance,
-  scriptInterface,
-  addonTriggers,
-  C3
-);
+P_C.Instance = class extends parentClass[PLUGIN_INFO.type].instance {
+  constructor(opts) {
+    if (PLUGIN_INFO.hasDomSide) {
+      super(opts, PLUGIN_INFO.id);
+    } else {
+      super(opts);
+    }
+    if (PLUGIN_INFO.hasWrapperExtension) {
+      this.SetWrapperExtensionComponentId(PLUGIN_INFO.id);
+      this._isWrapperExtensionAvailable = this.IsWrapperExtensionAvailable();
+    }
+  }
+
+  Release() {
+    super.Release();
+  }
+
+  Trigger(method) {
+    super.Trigger(method);
+    const addonTrigger = addonTriggers.find((x) => x.method === method);
+    if (addonTrigger) {
+      this.GetScriptInterface().dispatchEvent(new C3.Event(addonTrigger.id));
+    }
+  }
+
+  GetScriptInterfaceClass() {
+    return scriptInterface;
+  }
+};
+
+P_C.Instance = getInstanceJs(P_C.Instance, scriptInterface, addonTriggers, C3);

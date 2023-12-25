@@ -25,7 +25,9 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
     }
 
     if (PLUGIN_INFO.info.defaultImageUrl) {
-      this._info.SetDefaultImageURL(`c3runtime/${PLUGIN_INFO.info.defaultImageUrl}`);
+      this._info.SetDefaultImageURL(
+        `c3runtime/${PLUGIN_INFO.info.defaultImageUrl}`
+      );
     }
 
     if (PLUGIN_INFO.domSideScripts) {
@@ -34,6 +36,16 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
       );
     }
 
+    if (PLUGIN_INFO.extensionScript && PLUGIN_INFO.extensionScript.enabled) {
+      const targets = PLUGIN_INFO.extensionScript.targets || [];
+      targets.forEach((target) => {
+        this._info.AddFileDependency({
+          filename: `${PLUGIN_INFO.id}_${target.toLowerCase()}.ext.dll`,
+          type: "wrapper-extension",
+          platform: `windows-${target.toLowerCase()}`,
+        });
+      });
+    }
     if (PLUGIN_INFO.fileDependencies) {
       PLUGIN_INFO.fileDependencies.forEach((file) => {
         this._info.AddFileDependency({
@@ -58,8 +70,7 @@ SDK.Plugins[PLUGIN_INFO.id] = class extends SDK.IPluginBase {
     SDK.Lang.PushContext(".properties");
     this._info.SetProperties(
       (PLUGIN_INFO.properties || []).map(
-        (prop) =>
-          new SDK.PluginProperty(prop.type, prop.id, prop.options)
+        (prop) => new SDK.PluginProperty(prop.type, prop.id, prop.options)
       )
     );
     SDK.Lang.PopContext(); // .properties

@@ -2,12 +2,68 @@ const express = require("express");
 const { exec } = require("child_process");
 const chokidar = require("chokidar");
 const cors = require("cors");
+let pluginConfig = require("./src/pluginConfig.js");
+const runBuildWrapperExtension = require("./buildWrapperExtension.js");
 
 let port = 3000;
 const path = () => `http://localhost:${port}/addon.json`;
 
+let hasWrapperExtension =
+  pluginConfig.extensionScript && pluginConfig.extensionScript.enabled;
+let watchWrapperExtension =
+  hasWrapperExtension && pluginConfig.extensionScript.watch;
+
+let listenInputs = false; // listen for keypresses
+// watch for keypresses
+process.stdin.setRawMode(true);
+process.stdin.resume();
+process.stdin.setEncoding("utf8");
+
+process.stdin.on("data", function (key) {
+  if (!listenInputs) return;
+  // if the extension script is enabled and set to watch, watch the extension script
+  if (hasWrapperExtension && !watchWrapperExtension) {
+    if (key === "r") {
+      runBuild(true);
+    }
+  }
+
+  // console.log(key);
+
+  if (key === "\u0003") {
+    // if ctrl+c is pressed, exit
+    process.exit();
+  }
+
+  if (key === "c") {
+    // if ctrl+c is pressed, exit
+    // else copy to clipboard
+    process.stdin.pause();
+    exec(`echo ${path()} | clip`);
+    console.log("Copied to clipboard.");
+    process.stdin.resume();
+  }
+  if (key === "q") {
+    process.exit();
+  }
+});
+
+process.on("SIGINT", function () {
+  process.exit();
+});
+
+process.on("SIGTERM", function () {
+  process.exit();
+});
+
 // Execute build command
-const runBuild = () => {
+const runBuild = async (buildWrapperExtension = false) => {
+  listenInputs = false;
+  // if the extension script is enabled and set to watch, watch the extension script
+  if (buildWrapperExtension && hasWrapperExtension) {
+    await runBuildWrapperExtension();
+  }
+
   console.log("Running build...");
   exec("node build.js --dev", (error, stdout, stderr) => {
     if (error) {
@@ -23,22 +79,66 @@ const runBuild = () => {
     // log addon.json file path and copy it to the clipboard
     console.log("addon.json file path:");
     console.log(path());
+
+    // if the extension script is enabled and set to watch, watch the extension script
+    delete require.cache[require.resolve("./src/pluginConfig.js")];
+    pluginConfig = require("./src/pluginConfig.js");
+    const newHasWrapperExtension =
+      pluginConfig.extensionScript && pluginConfig.extensionScript.enabled;
+    const newWatchWrapperExtension =
+      hasWrapperExtension && pluginConfig.extensionScript.watch;
+
+    if (
+      newHasWrapperExtension !== hasWrapperExtension ||
+      newWatchWrapperExtension !== watchWrapperExtension
+    ) {
+      console.log("Wrapper Extension State changed");
+      hasWrapperExtension = newHasWrapperExtension;
+      watchWrapperExtension = newWatchWrapperExtension;
+
+      if (watchWrapperExtension) {
+        console.log("Now watching Wrapper Extension");
+        runBuild(true);
+      } else {
+        console.log("No longer watching Wrapper Extension");
+      }
+    }
+
+    console.log("Press c to copy the path to the clipboard.");
+    if (hasWrapperExtension && !watchWrapperExtension)
+      console.log("Press r to rebuild the wrapper extension.");
+    console.log("Press q to quit.");
+    listenInputs = true;
   });
 };
 
 // Run initial build
-runBuild();
+runBuild(true);
 
 // Watch for file changes in the src directory
 const watcher = chokidar.watch("src", {
   ignored: /(^|[\/\\])\../,
   persistent: true,
 });
+const wrapperWatcher = chokidar.watch("src_cpp/Project/**/*.cpp", {
+  ignored: /(^|[\/\\])\../,
+  persistent: true,
+});
 
+// Re-run build on file change
 watcher.on("change", (path) => {
   console.log(`File ${path} has been changed. Re-running build...`);
-  runBuild();
+  runBuild(false);
 });
+
+// if the extension script is enabled and set to watch, watch the extension script
+if (watchWrapperExtension) {
+  // Re-run build on file change
+  wrapperWatcher.on("change", (path) => {
+    console.log(`File ${path} has been changed. Re-running build...`);
+    runBuild(true);
+  });
+}
 
 // Create an express application
 const app = express();
@@ -56,9 +156,7 @@ function tryListen() {
 
     // log addon.json file path and copy it to the clipboard
     console.log("addon.json file path:");
-    console.log(path);
-    // copy to clipboard
-    exec(`echo ${path} | clip`);
+    console.log(path());
   });
 }
 
