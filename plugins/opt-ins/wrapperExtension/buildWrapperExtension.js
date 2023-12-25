@@ -2,6 +2,13 @@ const path = require("path");
 const fs = require("fs");
 const { exec } = require("child_process");
 
+const srcCppExists = fs.existsSync("./src_cpp");
+if (!srcCppExists) {
+  throw new Error(
+    "Could not find src_cpp folder. Please make sure you have the src_cpp folder in the root of your project."
+  );
+}
+
 // Paths
 const solutionDirectory = "./src_cpp/Project";
 const buildDirectory = "./src_cpp/Build";

@@ -1,0 +1,3 @@
+  domSideScripts: [
+    "domSide.js", // no need to include "c3runtime/" prefix
+  ],

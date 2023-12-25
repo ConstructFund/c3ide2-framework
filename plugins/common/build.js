@@ -5,10 +5,15 @@ const path = require("path");
 const args = process.argv.slice(2);
 const devBuild = args.includes("--dev");
 const buildWrapperExtension = args.includes("--buildWrapperExtension");
+let runBuildWrapperExtension;
+try {
+  runBuildWrapperExtension = require("./buildWrapperExtension.js");
+} catch (e) {
+  buildWrapperExtension = false;
+}
 
 (async () => {
   if (buildWrapperExtension) {
-    const runBuildWrapperExtension = require("./buildWrapperExtension.js");
     await runBuildWrapperExtension();
   }
 

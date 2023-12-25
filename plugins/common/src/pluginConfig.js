@@ -23,10 +23,13 @@ module.exports = {
   // githubUrl: "https://github.com/skymen/XXXX", // displays latest release version in auto-generated docs
   // icon: "icon.svg", // defaults to "icon.svg" if omitted
   type: "object", // world, object, dom
+  // <OPT_IN_DOMSIDE_START>
   domSideScripts: [
     // "domSide.js", // no need to include "c3runtime/" prefix
   ],
-  extensionScript: {
+  // <OPT_IN_DOMSIDE_END>
+  // <OPT_IN_WRAPPEREXTENSION_START>
+  /* extensionScript: {
     enabled: false, // set to false to disable the extension script
     watch: false, // set to true to enable live reload on changes during development
     targets: [
@@ -37,7 +40,8 @@ module.exports = {
 
     // you don't need to change this, the build step will rename the dll for you. Only change this if you change the name of the dll exported by Visual Studio
     name: "MyExtension",
-  },
+  }, */
+  // <OPT_IN_WRAPPEREXTENSION_END>
   fileDependencies: [
     /*
     {

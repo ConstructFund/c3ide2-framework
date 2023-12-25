@@ -3,13 +3,26 @@ const { exec } = require("child_process");
 const chokidar = require("chokidar");
 const cors = require("cors");
 let pluginConfig = require("./src/pluginConfig.js");
-const runBuildWrapperExtension = require("./buildWrapperExtension.js");
+let hasWrapperBuild = false;
+let runBuildWrapperExtension = () => {};
+try {
+  runBuildWrapperExtension = require("./buildWrapperExtension.js");
+  hasWrapperBuild = true;
+} catch (e) {
+  console.log("No wrapper extension found.");
+  hasWrapperBuild = false;
+}
+const fs = require("fs");
+
+const srcCppExists = fs.existsSync("./src_cpp");
 
 let port = 3000;
 const path = () => `http://localhost:${port}/addon.json`;
 
 let hasWrapperExtension =
-  pluginConfig.extensionScript && pluginConfig.extensionScript.enabled;
+  hasWrapperBuild &&
+  pluginConfig.extensionScript &&
+  pluginConfig.extensionScript.enabled;
 let watchWrapperExtension =
   hasWrapperExtension && pluginConfig.extensionScript.watch;
 
@@ -84,7 +97,9 @@ const runBuild = async (buildWrapperExtension = false) => {
     delete require.cache[require.resolve("./src/pluginConfig.js")];
     pluginConfig = require("./src/pluginConfig.js");
     const newHasWrapperExtension =
-      pluginConfig.extensionScript && pluginConfig.extensionScript.enabled;
+      hasWrapperBuild &&
+      pluginConfig.extensionScript &&
+      pluginConfig.extensionScript.enabled;
     const newWatchWrapperExtension =
       hasWrapperExtension && pluginConfig.extensionScript.watch;
 
@@ -120,10 +135,13 @@ const watcher = chokidar.watch("src", {
   ignored: /(^|[\/\\])\../,
   persistent: true,
 });
-const wrapperWatcher = chokidar.watch("src_cpp/Project/**/*.cpp", {
-  ignored: /(^|[\/\\])\../,
-  persistent: true,
-});
+let wrapperWatcher;
+if (srcCppExists) {
+  wrapperWatcher = chokidar.watch("src_cpp/Project/**/*.cpp", {
+    ignored: /(^|[\/\\])\../,
+    persistent: true,
+  });
+}
 
 // Re-run build on file change
 watcher.on("change", (path) => {
@@ -132,7 +150,7 @@ watcher.on("change", (path) => {
 });
 
 // if the extension script is enabled and set to watch, watch the extension script
-if (watchWrapperExtension) {
+if (watchWrapperExtension && srcCppExists) {
   // Re-run build on file change
   wrapperWatcher.on("change", (path) => {
     console.log(`File ${path} has been changed. Re-running build...`);
