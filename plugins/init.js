@@ -17,6 +17,34 @@ const optInsPath = path.join(__dirname, "opt-ins");
 const commonPath = path.join(__dirname, "common");
 const parentPath = __dirname;
 
+async function extraWrapperExtensionProcessing() {
+  // check the file WrapperExtension.cpp exists in the optin folder
+  const wrapperExtensionPath = path.join(
+    optInsPath,
+    "wrapperExtension",
+    "src_cpp",
+    "Project",
+    "WrapperExtension.cpp"
+  );
+  const wrapperExtensionExists = await fs
+    .access(wrapperExtensionPath)
+    .then(() => true)
+    .catch(() => false);
+  if (wrapperExtensionExists) {
+    // replace all occurrences of <@ADDON_ID> with the addon id
+    const wrapperExtensionContents = await fs.readFile(
+      wrapperExtensionPath,
+      "utf8"
+    );
+    const addonId = path.basename(__dirname);
+    const newContents = wrapperExtensionContents.replace(
+      /<@ADDON_ID>/g,
+      addonId
+    );
+    await fs.writeFile(wrapperExtensionPath, newContents);
+  }
+}
+
 async function main() {
   // Ensure common folder exists
   await fs.mkdir(commonPath, { recursive: true });
@@ -25,6 +53,11 @@ async function main() {
     const folders = await getSubfolders(optInsPath);
     const selectedFolders = await promptUserToSelectFolders(folders);
     await processConfigOverrides(folders, selectedFolders);
+
+    if (selectedFolders.includes("wrapperExtension")) {
+      await extraWrapperExtensionProcessing();
+    }
+
     await copySelectedFolders(selectedFolders);
     await moveContentsToParent();
     await cleanUp();

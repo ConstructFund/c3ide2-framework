@@ -52,7 +52,7 @@ WrapperExtension::WrapperExtension(IApplication* iApplication_)
 	// Extensions should only register a single component ID, and it must be different to all other component
 	// IDs that are ever used, so make sure it's unique. It should also only be registered here
 	// in the WrapperExtension constructor.
-	iApplication->RegisterComponentId("skymen_test_cpp_extension");
+	iApplication->RegisterComponentId("<@ADDON_ID>");
 }
 
 void WrapperExtension::Init()
