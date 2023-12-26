@@ -43,6 +43,42 @@ async function extraWrapperExtensionProcessing() {
     );
     await fs.writeFile(wrapperExtensionPath, newContents);
   }
+
+  // ask using inquirer if the user wants to set up auto live reload for the wrapper extension
+  const inquirer = (await import("inquirer")).default;
+  const answers = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "autoLiveReload",
+      message:
+        "Do you want to set up auto live reload for the wrapper extension?",
+    },
+  ]);
+
+  const configOverridePath = path.join(
+    optInsPath,
+    "wrapperExtension",
+    "src",
+    "configOverride.txt"
+  );
+
+  const configOverrideExists = await fs
+    .access(configOverridePath)
+    .then(() => true)
+    .catch(() => false);
+
+  if (configOverrideExists) {
+    const configOverrideContents = await fs.readFile(
+      configOverridePath,
+      "utf8"
+    );
+    // replace <@LIVE_RELOAD> with the answer
+    const newContents = configOverrideContents.replace(
+      /<@LIVE_RELOAD>/g,
+      answers.autoLiveReload ? "true" : "false"
+    );
+    await fs.writeFile(configOverridePath, newContents);
+  }
 }
 
 async function main() {
@@ -52,12 +88,10 @@ async function main() {
   try {
     const folders = await getSubfolders(optInsPath);
     const selectedFolders = await promptUserToSelectFolders(folders);
-    await processConfigOverrides(folders, selectedFolders);
-
     if (selectedFolders.includes("wrapperExtension")) {
       await extraWrapperExtensionProcessing();
     }
-
+    await processConfigOverrides(folders, selectedFolders);
     await copySelectedFolders(selectedFolders);
     await moveContentsToParent();
     await cleanUp();

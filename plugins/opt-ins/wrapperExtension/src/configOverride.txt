@@ -1,6 +1,6 @@
   extensionScript: {
-    enabled: false, // set to false to disable the extension script
-    watch: false, // set to true to enable live reload on changes during development
+    enabled: true, // set to false to disable the extension script
+    watch: <@LIVE_RELOAD>, // set to true to enable live reload on changes during development
     targets: [
       "x86",
       "x64",
