@@ -4,7 +4,7 @@ const path = require("path");
 // get command line arguments
 const args = process.argv.slice(2);
 const devBuild = args.includes("--dev");
-const buildWrapperExtension = args.includes("--buildWrapperExtension");
+let buildWrapperExtension = args.includes("--buildWrapperExtension");
 let runBuildWrapperExtension;
 try {
   runBuildWrapperExtension = require("./buildWrapperExtension.js");
