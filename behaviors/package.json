@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/ConstructFund/c3ide2-framework/issues"
   },
-  "homepage": "https://github.com/ConstructFund/c3ide2-framework#readme"
+  "homepage": "https://github.com/ConstructFund/c3ide2-framework#readme",
+  "devDependencies": {
+    "c3ide2-types": "^1.0.0"
+  }
 }
