@@ -52,7 +52,7 @@ B_C.Type = class extends C3.SDKBehaviorTypeBase {
     super.Release();
   }
 
-  OnCreate() {}
+  OnCreate() { }
 };
 
 //====== SCRIPT INTERFACE ======
@@ -122,8 +122,9 @@ B_C.Exps = {};
 Object.keys(BEHAVIOR_INFO.Acts).forEach((key) => {
   const ace = BEHAVIOR_INFO.Acts[key];
   B_C.Acts[camelCasify(key)] = function (...args) {
-    if (ace.forward) ace.forward(this).call(this, ...args);
-    else if (ace.handler) ace.handler.call(this, ...args);
+    return ace.forward
+      ? ace.forward(this).call(this, ...args)
+      : ace.handler.call(this, ...args);
   };
 });
 Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {

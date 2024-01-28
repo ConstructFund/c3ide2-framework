@@ -68,7 +68,7 @@ P_C.Type = class extends C3.SDKTypeBase {
     super.Release();
   }
 
-  OnCreate() {}
+  OnCreate() { }
 };
 
 //====== SCRIPT INTERFACE ======
@@ -141,8 +141,9 @@ P_C.Exps = {};
 Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
   const ace = PLUGIN_INFO.Acts[key];
   P_C.Acts[camelCasify(key)] = function (...args) {
-    if (ace.forward) ace.forward(this).call(this, ...args);
-    else if (ace.handler) ace.handler.call(this, ...args);
+    return ace.forward
+      ? ace.forward(this).call(this, ...args)
+      : ace.handler.call(this, ...args);
   };
 });
 Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
