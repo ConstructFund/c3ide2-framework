@@ -149,8 +149,9 @@ Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
 Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
   const ace = PLUGIN_INFO.Cnds[key];
   P_C.Cnds[camelCasify(key)] = function (...args) {
-    if (ace.forward) return ace.forward(this).call(this, ...args);
-    if (ace.handler) return ace.handler.call(this, ...args);
+    return ace.forward
+      ? ace.forward(this).call(this, ...args)
+      : ace.handler.call(this, ...args);
   };
   if (ace.isTrigger && ace.autoScriptInterface) {
     addonTriggers.push({
@@ -162,8 +163,9 @@ Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
 Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
   const ace = PLUGIN_INFO.Exps[key];
   P_C.Exps[camelCasify(key)] = function (...args) {
-    if (ace.forward) return ace.forward(this).call(this, ...args);
-    if (ace.handler) return ace.handler.call(this, ...args);
+    return ace.forward
+      ? ace.forward(this).call(this, ...args)
+      : ace.handler.call(this, ...args);
   };
 });
 //============ ACES ============
