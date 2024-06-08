@@ -17,12 +17,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/skymen/layer-manager.git"
+    "url": "git+https://github.com/ConstructFund/c3ide2-framework.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/skymen/layer-manager/issues"
+    "url": "https://github.com/ConstructFund/c3ide2-framework/issues"
   },
-  "homepage": "https://github.com/skymen/layer-manager#readme"
+  "homepage": "https://github.com/ConstructFund/c3ide2-framework#readme",
+  "devDependencies": {
+    "c3ide2-types": "^1.0.0"
+  }
 }

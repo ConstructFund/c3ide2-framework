@@ -67,6 +67,7 @@ function addonFromConfig(config) {
     "must-predraw": config.mustPredraw,
     "extend-box": config.extendBox,
     "is-deprecated": config.isDeprecated,
+    "supports-3d-direct-rendering": config.supports3DDirectRendering || false,	  
     parameters: config.parameters.map((parameter) => {
       const ret = {
         ...parameter,
@@ -143,7 +144,7 @@ if (supportedRenderers.includes("webgl")) {
     config.parameters
       .map((parameter) => {
         return `uniform ${
-          parameter.hasOwnProperty("precision") ? uniform.precisiion : "lowp"
+          parameter.hasOwnProperty("precision") ? parameter.precision : "lowp"
         } ${parameter.type === "color" ? "vec3" : "float"} ${
           parameter.uniform
         };`;
@@ -162,7 +163,7 @@ if (supportedRenderers.includes("webgl2")) {
     config.parameters
       .map((parameter) => {
         return `uniform ${
-          parameter.hasOwnProperty("precision") ? uniform.precisiion : "lowp"
+          parameter.hasOwnProperty("precision") ? parameter.precision : "lowp"
         } ${parameter.type === "color" ? "vec3" : "float"} ${
           parameter.uniform
         };`;
