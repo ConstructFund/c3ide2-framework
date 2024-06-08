@@ -161,13 +161,6 @@ module.exports = {
         // Your code here
       }`,
 
-      // Set to true to automatically generate a script interface for this action
-      // Cases where you might not want this are:
-      // 1- If the action params are incompatible with the script interface
-      // 2- If you don't want it to appear in the script interface
-      // 3- If the script interface has a better way to achieve the same thing
-      autoScriptInterface: true,
-
       // Set to true to highlight the action in the add action dialog
       highlight: true,
 
@@ -180,7 +173,7 @@ module.exports = {
       // list of parameters
       params: [
         {
-          // The id of the parameter. This is used to generate the script interface.
+          // The id of the parameter.
           // It must be unique for each parameter.
           id: "param1",
           // The name of the parameter.
@@ -190,16 +183,16 @@ module.exports = {
 
           // The type of the parameter.
           type:
-            // The following types can take a default value AND be automatically generated in the script interface
+            // The following types can take a default value
             - "string"
             - "number"
             - "any"
             - "boolean"
 
-            // The following types can take a default value but CANNOT be automatically generated in the script interface
+            // The following types can take a default value
             - "combo"
 
-            // The following types CANNOT take a default value AND CANNOT be automatically generated in the script interface
+            // The following types CANNOT take a default value
             - "cmp"
             - "object"
             - "objectname"
@@ -253,13 +246,6 @@ module.exports = {
         // Your code here
       }`,
 
-      // Set to true to automatically generate a script interface for this condition
-      // Cases where you might not want this are:
-      // 1- If the condition params are incompatible with the script interface
-      // 2- If you don't want it to appear in the script interface
-      // 3- If the script interface has a better way to achieve the same thing
-      autoScriptInterface: true,
-
       // Set to true to highlight the condition in the add condition dialog
       highlight: true,
 
@@ -277,7 +263,7 @@ module.exports = {
       // list of parameters
       params: [
         {
-          // The id of the parameter. This is used to generate the script interface.
+          // The id of the parameter.
           // It must be unique for each parameter.
           id: "param1",
           // The name of the parameter.
@@ -287,16 +273,16 @@ module.exports = {
 
           // The type of the parameter.
           type:
-            // The following types can take a default value AND be automatically generated in the script interface
+            // The following types can take a default value
             - "string"
             - "number"
             - "any"
             - "boolean"
 
-            // The following types can take a default value but CANNOT be automatically generated in the script interface
+            // The following types can take a default value
             - "combo"
 
-            // The following types CANNOT take a default value AND CANNOT be automatically generated in the script interface
+            // The following types CANNOT take a default value
             - "cmp"
             - "object"
             - "objectname"
@@ -350,12 +336,6 @@ module.exports = {
         // Your code here
       }`,
 
-      // Set to true to automatically generate a script interface for this expression
-      // Cases where you might not want this are:
-      // 1- If you don't want it to appear in the script interface
-      // 2- If the script interface has a better way to achieve the same thing
-      autoScriptInterface: true,
-
       // Set to true to highlight the expression in the expression picker
       highlight: true,
 
@@ -374,7 +354,7 @@ module.exports = {
       // list of parameters
       params: [
         {
-          // The id of the parameter. This is used to generate the script interface.
+          // The id of the parameter.
           // It must be unique for each parameter.
           id: "param1",
           // The name of the parameter.
@@ -384,7 +364,7 @@ module.exports = {
 
           // The type of the parameter.
           type:
-            // The following types can take a default value AND be automatically generated in the script interface
+            // The following types can take a default value
             - "string"
             - "number"
             - "any"

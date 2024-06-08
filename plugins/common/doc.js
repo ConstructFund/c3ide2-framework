@@ -92,7 +92,7 @@ readme.push(
   `The build uses the pluginConfig file to generate everything else.`
 );
 readme.push(
-  `The main files you may want to look at would be instance.js and scriptInterface.js`
+  `The main files you may want to look at would be instance.js`
 );
 
 readme.push(``);

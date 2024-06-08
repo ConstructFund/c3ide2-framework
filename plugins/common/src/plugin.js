@@ -1,4 +1,4 @@
-const C3 = self.C3;
+const C3 = globalThis.C3;
 
 //<-- PLUGIN_INFO -->
 
@@ -35,104 +35,41 @@ function camelCasify(str) {
 
 const parentClass = {
   object: {
-    scripting: self.IInstance,
-    instance: C3.SDKInstanceBase,
-    plugin: C3.SDKPluginBase,
+    scripting: globalThis.IInstance,
+    instance: globalThis.ISDKInstanceBase,
+    plugin: globalThis.ISDKPluginBase,
   },
   world: {
-    scripting: self.IWorldInstance,
-    instance: C3.SDKWorldInstanceBase,
-    plugin: C3.SDKPluginBase,
+    scripting: globalThis.IWorldInstance,
+    instance: globalThis.ISDKWorldInstanceBase,
+    plugin: globalThis.ISDKPluginBase,
   },
   dom: {
-    scripting: self.IDOMInstance,
-    instance: C3.SDKDOMInstanceBase,
-    plugin: C3.SDKDOMPluginBase,
+    scripting: globalThis.IDOMInstance,
+    instance: globalThis.ISDKDOMInstanceBase,
+    plugin: globalThis.ISDKDOMPluginBase,
   },
 };
 
 C3.Plugins[PLUGIN_INFO.id] = class extends (
   parentClass[PLUGIN_INFO.type].plugin
 ) {
-  Release() {
-    super.Release();
+  _release() {
+    super._release();
   }
 };
 const P_C = C3.Plugins[PLUGIN_INFO.id];
-P_C.Type = class extends C3.SDKTypeBase {
+P_C.Type = class extends globalThis.ISDKTypeBase {
   constructor(objectClass) {
     super(objectClass);
   }
 
-  Release() {
-    super.Release();
+  _release() {
+    super._release();
   }
 
-  OnCreate() {}
+  _onCreate() { }
 };
-
-//====== SCRIPT INTERFACE ======
-const map = new WeakMap();
-
-//<-- SCRIPT_INTERFACE -->
-
-const scriptInterface = getScriptInterface(
-  parentClass[PLUGIN_INFO.type].scripting,
-  map
-);
-
-// extend script interface with plugin actions
-Object.keys(PLUGIN_INFO.Acts).forEach((key) => {
-  const ace = PLUGIN_INFO.Acts[key];
-  if (!ace.autoScriptInterface) return;
-  if (ace.isAsync) {
-    scriptInterface.prototype[camelCasify(key)] = async function (...args) {
-      const sdkInst = map.get(this);
-      await P_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-    };
-  } else {
-    scriptInterface.prototype[camelCasify(key)] = function (...args) {
-      const sdkInst = map.get(this);
-      P_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-    };
-  }
-});
-
-const addonTriggers = [];
-
-// extend script interface with plugin conditions
-Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
-  const ace = PLUGIN_INFO.Cnds[key];
-  if (!ace.autoScriptInterface || ace.isStatic || ace.isLooping) return;
-  if (ace.isTrigger) {
-    scriptInterface.prototype[camelCasify(key)] = function (callback, ...args) {
-      const callbackWrapper = () => {
-        const sdkInst = map.get(this);
-        if (P_C.Cnds[camelCasify(key)].call(sdkInst, ...args)) {
-          callback();
-        }
-      };
-      this.addEventListener(key, callbackWrapper, false);
-      return () => this.removeEventListener(key, callbackWrapper, false);
-    };
-  } else {
-    scriptInterface.prototype[key] = function (...args) {
-      const sdkInst = map.get(this);
-      return P_C.Cnds[camelCasify(key)].call(sdkInst, ...args);
-    };
-  }
-});
-
-// extend script interface with plugin expressions
-Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
-  const ace = PLUGIN_INFO.Exps[key];
-  if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[camelCasify(key)] = function (...args) {
-    const sdkInst = map.get(this);
-    return P_C.Exps[camelCasify(key)].call(sdkInst, ...args);
-  };
-});
-//====== SCRIPT INTERFACE ======
 
 //============ ACES ============
 P_C.Acts = {};
@@ -151,12 +88,6 @@ Object.keys(PLUGIN_INFO.Cnds).forEach((key) => {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
-  if (ace.isTrigger && ace.autoScriptInterface) {
-    addonTriggers.push({
-      method: P_C.Cnds[camelCasify(key)],
-      id: key,
-    });
-  }
 });
 Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
   const ace = PLUGIN_INFO.Exps[key];
@@ -171,32 +102,21 @@ Object.keys(PLUGIN_INFO.Exps).forEach((key) => {
 
 P_C.Instance = class extends parentClass[PLUGIN_INFO.type].instance {
   constructor(opts) {
+    if (PLUGIN_INFO.hasWrapperExtension) {
+      opts.wrapperComponentId = PLUGIN_INFO.id;
+      this._isWrapperExtensionAvailable = this.IsWrapperExtensionAvailable();
+    }
+
     if (PLUGIN_INFO.hasDomSide) {
       super(opts, PLUGIN_INFO.id);
     } else {
       super(opts);
     }
-    if (PLUGIN_INFO.hasWrapperExtension) {
-      this.SetWrapperExtensionComponentId(PLUGIN_INFO.id);
-      this._isWrapperExtensionAvailable = this.IsWrapperExtensionAvailable();
-    }
   }
 
-  Release() {
-    super.Release();
-  }
-
-  Trigger(method) {
-    super.Trigger(method);
-    const addonTrigger = addonTriggers.find((x) => x.method === method);
-    if (addonTrigger) {
-      this.GetScriptInterface().dispatchEvent(new C3.Event(addonTrigger.id));
-    }
-  }
-
-  GetScriptInterfaceClass() {
-    return scriptInterface;
+  _release() {
+    super._release();
   }
 };
 
-P_C.Instance = getInstanceJs(P_C.Instance, scriptInterface, addonTriggers, C3);
+P_C.Instance = getInstanceJs(P_C.Instance, addonTriggers, C3);

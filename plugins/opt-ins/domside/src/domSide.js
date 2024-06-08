@@ -6,11 +6,11 @@
   //<-- DOM_COMPONENT_ID -->
 
   // This class handles messages from the runtime, which may be in a Web Worker.
-  const HANDLER_CLASS = class extends self.DOMHandler {
+  const HANDLER_CLASS = class extends globalThis.DOMHandler {
     constructor(iRuntime) {
       super(iRuntime, DOM_COMPONENT_ID);
     }
   };
 
-  self.RuntimeInterface.AddDOMHandlerClass(HANDLER_CLASS);
+  globalThis.RuntimeInterface.AddDOMHandlerClass(HANDLER_CLASS);
 }

@@ -96,6 +96,7 @@ try {
   function addonFromConfig(config) {
     return {
       "is-c3-addon": true,
+      "sdk-version": 2,
       type: config.addonType,
       name: config.name,
       id: config.id,
@@ -264,7 +265,6 @@ try {
                 case "category":
                 case "forward":
                 case "handler":
-                case "autoScriptInterface":
                 case "listName":
                 case "displayText":
                 case "description":
@@ -309,7 +309,6 @@ try {
                 case "category":
                 case "forward":
                 case "handler":
-                case "autoScriptInterface":
                 case "listName":
                 case "displayText":
                 case "description":
@@ -355,7 +354,6 @@ try {
                 case "category":
                 case "forward":
                 case "handler":
-                case "autoScriptInterface":
                 case "listName":
                 case "displayText":
                 case "description":
@@ -467,25 +465,22 @@ try {
             id: "${property.id}",
             options: {
               ...${JSON.stringify(options, null, 2)},
-              ${
-                property.options.hasOwnProperty("infoCallback")
-                  ? `infoCallback: ${property.options.infoCallback},`
-                  : ""
-              }
-              ${
-                property.options.hasOwnProperty("linkCallback")
-                  ? `linkCallback: ${property.options.linkCallback},`
-                  : ""
-              }
-              ${
-                property.options.hasOwnProperty("items")
-                  ? `items: ${JSON.stringify(
-                      property.options.items.map((x) => Object.keys(x)[0]),
-                      null,
-                      2
-                    )},`
-                  : ""
-              }
+              ${property.options.hasOwnProperty("infoCallback")
+              ? `infoCallback: ${property.options.infoCallback},`
+              : ""
+            }
+              ${property.options.hasOwnProperty("linkCallback")
+              ? `linkCallback: ${property.options.linkCallback},`
+              : ""
+            }
+              ${property.options.hasOwnProperty("items")
+              ? `items: ${JSON.stringify(
+                property.options.items.map((x) => Object.keys(x)[0]),
+                null,
+                2
+              )},`
+              : ""
+            }
             },
           }`;
         })
@@ -508,77 +503,55 @@ try {
   id: "${config.id}",
   type: "${config.type}",
   hasDomSide: ${config.domSideScripts && config.domSideScripts.length > 0},
-  hasWrapperExtension: ${
-    config.extensionScript && config.extensionScript.enabled
-  },
+  hasWrapperExtension: ${config.extensionScript && config.extensionScript.enabled
+      },
   Acts: {
     ${Object.keys(config.Acts)
-      .map((key) => {
-        return `"${key}": {
-          ${
-            config.Acts[key].hasOwnProperty("forward")
+        .map((key) => {
+          return `"${key}": {
+          ${config.Acts[key].hasOwnProperty("forward")
               ? `"forward": (inst) => inst.${config.Acts[key].forward},`
               : ""
-          }
-          ${
-            config.Acts[key].hasOwnProperty("handler")
+            }
+          ${config.Acts[key].hasOwnProperty("handler")
               ? `"handler": ${config.Acts[key].handler},`
               : ""
-          }
-          ${
-            config.Acts[key].hasOwnProperty("autoScriptInterface")
-              ? `"autoScriptInterface": ${config.Acts[key].autoScriptInterface},`
-              : ""
-          }
+            }
           }`;
-      })
-      .join(",\n")}
+        })
+        .join(",\n")}
   },
   Cnds: {
     ${Object.keys(config.Cnds)
-      .map((key) => {
-        return `"${key}": {
-          ${
-            config.Cnds[key].hasOwnProperty("forward")
+        .map((key) => {
+          return `"${key}": {
+          ${config.Cnds[key].hasOwnProperty("forward")
               ? `"forward": (inst) => inst.${config.Cnds[key].forward},`
               : ""
-          }
-          ${
-            config.Cnds[key].hasOwnProperty("handler")
+            }
+          ${config.Cnds[key].hasOwnProperty("handler")
               ? `"handler": ${config.Cnds[key].handler},`
               : ""
-          }
-          ${
-            config.Cnds[key].hasOwnProperty("autoScriptInterface")
-              ? `"autoScriptInterface": ${config.Cnds[key].autoScriptInterface},`
-              : ""
-          }
+            }
         }`;
-      })
-      .join(",\n")}
+        })
+        .join(",\n")}
   },
   Exps: {
     ${Object.keys(config.Exps)
-      .map((key) => {
-        return `"${key}": {
-          ${
-            config.Exps[key].hasOwnProperty("forward")
+        .map((key) => {
+          return `"${key}": {
+          ${config.Exps[key].hasOwnProperty("forward")
               ? `"forward": (inst) => inst.${config.Exps[key].forward},`
               : ""
-          }
-          ${
-            config.Exps[key].hasOwnProperty("handler")
+            }
+          ${config.Exps[key].hasOwnProperty("handler")
               ? `"handler": ${config.Exps[key].handler},`
               : ""
-          }
-          ${
-            config.Exps[key].hasOwnProperty("autoScriptInterface")
-              ? `"autoScriptInterface": ${config.Exps[key].autoScriptInterface},`
-              : ""
-          }
+            }
         }`;
-      })
-      .join(",\n")}
+        })
+        .join(",\n")}
   },
 };`;
   }
@@ -586,12 +559,10 @@ try {
   // write plugin.js and replace "//<-- PLUGIN_INFO -->" with the plugin info
   const plugin = fs.readFileSync("./src/plugin.js", "utf8");
   const instance = fs.readFileSync("./src/instance.js", "utf8");
-  const scriptInterface = fs.readFileSync("./src/scriptInterface.js", "utf8");
   const pluginPluginInfo = getRuntimePluginInfoFromConfig(config);
   const pluginWithPluginInfo = plugin
     .replaceAll("//<-- PLUGIN_INFO -->", pluginPluginInfo)
-    .replaceAll("//<-- INSTANCE -->", instance)
-    .replaceAll("//<-- SCRIPT_INTERFACE -->", scriptInterface);
+    .replaceAll("//<-- INSTANCE -->", instance);
 
   fs.writeFileSync("./export/c3runtime/plugin.js", pluginWithPluginInfo);
 

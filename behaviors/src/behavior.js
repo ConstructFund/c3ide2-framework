@@ -1,4 +1,4 @@
-const C3 = self.C3;
+const C3 = globalThis.C3;
 
 //<-- BEHAVIOR_INFO -->
 
@@ -33,87 +33,29 @@ function camelCasify(str) {
   return result;
 }
 
-C3.Behaviors[BEHAVIOR_INFO.id] = class extends C3.SDKBehaviorBase {
+C3.Behaviors[BEHAVIOR_INFO.id] = class extends globalThis.ISDKBehaviorBase {
   constructor(opts) {
     super(opts);
   }
 
-  Release() {
-    super.Release();
+  _release() {
+    super._release();
   }
 };
 const B_C = C3.Behaviors[BEHAVIOR_INFO.id];
-B_C.Type = class extends C3.SDKBehaviorTypeBase {
+B_C.Type = class extends globalThis.ISDKBehaviorTypeBase {
   constructor(objectClass) {
     super(objectClass);
   }
 
-  Release() {
-    super.Release();
+  _release() {
+    super._release();
   }
 
-  OnCreate() {}
+  _onCreate() { }
 };
 
-//====== SCRIPT INTERFACE ======
-const map = new WeakMap();
-
-//<-- SCRIPT_INTERFACE -->
-
-const scriptInterface = getScriptInterface(self.IBehaviorInstance, map);
-
-// extend script interface with plugin actions
-Object.keys(BEHAVIOR_INFO.Acts).forEach((key) => {
-  const ace = BEHAVIOR_INFO.Acts[key];
-  if (!ace.autoScriptInterface) return;
-  if (ace.isAsync) {
-    scriptInterface.prototype[camelCasify(key)] = async function (...args) {
-      const sdkInst = map.get(this);
-      await B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-    };
-  } else {
-    scriptInterface.prototype[camelCasify(key)] = function (...args) {
-      const sdkInst = map.get(this);
-      B_C.Acts[camelCasify(key)].call(sdkInst, ...args);
-    };
-  }
-});
-
 const addonTriggers = [];
-
-// extend script interface with plugin conditions
-Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
-  const ace = BEHAVIOR_INFO.Cnds[key];
-  if (!ace.autoScriptInterface || ace.isStatic || ace.isLooping) return;
-  if (ace.isTrigger) {
-    scriptInterface.prototype[camelCasify(key)] = function (callback, ...args) {
-      const callbackWrapper = () => {
-        const sdkInst = map.get(this);
-        if (B_C.Cnds[camelCasify(key)].call(sdkInst, ...args)) {
-          callback();
-        }
-      };
-      this.addEventListener(key, callbackWrapper, false);
-      return () => this.removeEventListener(key, callbackWrapper, false);
-    };
-  } else {
-    scriptInterface.prototype[camelCasify(key)] = function (...args) {
-      const sdkInst = map.get(this);
-      return B_C.Cnds[camelCasify(key)].call(sdkInst, ...args);
-    };
-  }
-});
-
-// extend script interface with plugin expressions
-Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
-  const ace = BEHAVIOR_INFO.Exps[key];
-  if (!ace.autoScriptInterface) return;
-  scriptInterface.prototype[camelCasify(key)] = function (...args) {
-    const sdkInst = map.get(this);
-    return B_C.Exps[camelCasify(key)].call(sdkInst, ...args);
-  };
-});
-//====== SCRIPT INTERFACE ======
 
 //============ ACES ============
 B_C.Acts = {};
@@ -132,12 +74,6 @@ Object.keys(BEHAVIOR_INFO.Cnds).forEach((key) => {
     if (ace.forward) return ace.forward(this).call(this, ...args);
     if (ace.handler) return ace.handler.call(this, ...args);
   };
-  if (ace.isTrigger && ace.autoScriptInterface) {
-    addonTriggers.push({
-      method: B_C.Cnds[camelCasify(key)],
-      id: key,
-    });
-  }
 });
 Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
   const ace = BEHAVIOR_INFO.Exps[key];
@@ -151,8 +87,7 @@ Object.keys(BEHAVIOR_INFO.Exps).forEach((key) => {
 //<-- INSTANCE -->
 
 B_C.Instance = getInstanceJs(
-  C3.SDKBehaviorInstanceBase,
-  scriptInterface,
+  globalThis.ISDKBehaviorInstanceBase,
   addonTriggers,
   C3
 );

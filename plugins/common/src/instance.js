@@ -1,19 +1,20 @@
-function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
+function getInstanceJs(parentClass, addonTriggers, C3) {
   return class extends parentClass {
-    constructor(inst, properties) {
-      super(inst);
+    constructor() {
+      super();
 
+      const properties = this._getInitProperties();
       if (properties) {
       }
     }
 
-    SaveToJson() {
+    _saveToJson() {
       return {
         // data to be saved for savegames
       };
     }
 
-    LoadFromJson(o) {
+    _loadFromJson(o) {
       // load state for savegames
     }
   };

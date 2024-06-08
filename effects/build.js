@@ -43,6 +43,7 @@ function getFileListFromConfig(config) {
 function addonFromConfig(config) {
   return {
     "is-c3-addon": true,
+    "sdk-version": 2,
     type: config.addonType,
     name: config.name,
     id: config.id,

@@ -67,6 +67,7 @@ function getFileListFromConfig(config) {
 function addonFromConfig(config) {
   return {
     "is-c3-addon": true,
+    "sdk-version": 2,
     type: config.addonType,
     name: config.name,
     id: config.id,
@@ -234,7 +235,6 @@ function acesFromConfig(config) {
               case "category":
               case "forward":
               case "handler":
-              case "autoScriptInterface":
               case "listName":
               case "displayText":
               case "description":
@@ -279,7 +279,6 @@ function acesFromConfig(config) {
               case "category":
               case "forward":
               case "handler":
-              case "autoScriptInterface":
               case "listName":
               case "displayText":
               case "description":
@@ -325,7 +324,6 @@ function acesFromConfig(config) {
               case "category":
               case "forward":
               case "handler":
-              case "autoScriptInterface":
               case "listName":
               case "displayText":
               case "description":
@@ -422,41 +420,38 @@ function getEditorPluginInfoFromConfig(config) {
     ...${JSON.stringify(editorPluginInfo, null, 2)},
     properties: [
       ${config.properties
-        .map((property) => {
-          const options = {
-            ...property.options,
-          };
-          delete options.infoCallback;
-          delete options.linkCallback;
-          delete options.items;
-          return `{
+      .map((property) => {
+        const options = {
+          ...property.options,
+        };
+        delete options.infoCallback;
+        delete options.linkCallback;
+        delete options.items;
+        return `{
             type: "${property.type}",
             id: "${property.id}",
             options: {
               ...${JSON.stringify(options, null, 2)},
-              ${
-                property.options.hasOwnProperty("infoCallback")
-                  ? `infoCallback: ${property.options.infoCallback},`
-                  : ""
-              }
-              ${
-                property.options.hasOwnProperty("linkCallback")
-                  ? `linkCallback: ${property.options.linkCallback},`
-                  : ""
-              }
-              ${
-                property.options.hasOwnProperty("items")
-                  ? `items: ${JSON.stringify(
-                      property.options.items.map((x) => Object.keys(x)[0]),
-                      null,
-                      2
-                    )},`
-                  : ""
-              }
+              ${property.options.hasOwnProperty("infoCallback")
+            ? `infoCallback: ${property.options.infoCallback},`
+            : ""
+          }
+              ${property.options.hasOwnProperty("linkCallback")
+            ? `linkCallback: ${property.options.linkCallback},`
+            : ""
+          }
+              ${property.options.hasOwnProperty("items")
+            ? `items: ${JSON.stringify(
+              property.options.items.map((x) => Object.keys(x)[0]),
+              null,
+              2
+            )},`
+            : ""
+          }
             },
           }`;
-        })
-        .join(",\n")}
+      })
+      .join(",\n")}
     ],
   };`;
 }
@@ -475,72 +470,51 @@ function getRuntimePluginInfoFromConfig(config) {
     id: "${config.id}",
     Acts: {
       ${Object.keys(config.Acts)
-        .map((key) => {
-          return `"${key}": {
-            ${
-              config.Acts[key].hasOwnProperty("forward")
-                ? `"forward": (inst) => inst.${config.Acts[key].forward},`
-                : ""
-            }
-            ${
-              config.Acts[key].hasOwnProperty("handler")
-                ? `"handler": ${config.Acts[key].handler},`
-                : ""
-            }
-            ${
-              config.Acts[key].hasOwnProperty("autoScriptInterface")
-                ? `"autoScriptInterface": ${config.Acts[key].autoScriptInterface},`
-                : ""
-            }
-            }`;
-        })
-        .join(",\n")}
+      .map((key) => {
+        return `"${key}": {
+            ${config.Acts[key].hasOwnProperty("forward")
+            ? `"forward": (inst) => inst.${config.Acts[key].forward},`
+            : ""
+          }
+            ${config.Acts[key].hasOwnProperty("handler")
+            ? `"handler": ${config.Acts[key].handler},`
+            : ""
+          }
+          }`;
+      })
+      .join(",\n")}
     },
     Cnds: {
       ${Object.keys(config.Cnds)
-        .map((key) => {
-          return `"${key}": {
-            ${
-              config.Cnds[key].hasOwnProperty("forward")
-                ? `"forward": (inst) => inst.${config.Cnds[key].forward},`
-                : ""
-            }
-            ${
-              config.Cnds[key].hasOwnProperty("handler")
-                ? `"handler": ${config.Cnds[key].handler},`
-                : ""
-            }
-            ${
-              config.Cnds[key].hasOwnProperty("autoScriptInterface")
-                ? `"autoScriptInterface": ${config.Cnds[key].autoScriptInterface},`
-                : ""
-            }
+      .map((key) => {
+        return `"${key}": {
+            ${config.Cnds[key].hasOwnProperty("forward")
+            ? `"forward": (inst) => inst.${config.Cnds[key].forward},`
+            : ""
+          }
+            ${config.Cnds[key].hasOwnProperty("handler")
+            ? `"handler": ${config.Cnds[key].handler},`
+            : ""
+          }
           }`;
-        })
-        .join(",\n")}
+      })
+      .join(",\n")}
     },
     Exps: {
       ${Object.keys(config.Exps)
-        .map((key) => {
-          return `"${key}": {
-            ${
-              config.Exps[key].hasOwnProperty("forward")
-                ? `"forward": (inst) => inst.${config.Exps[key].forward},`
-                : ""
-            }
-            ${
-              config.Exps[key].hasOwnProperty("handler")
-                ? `"handler": ${config.Exps[key].handler},`
-                : ""
-            }
-            ${
-              config.Exps[key].hasOwnProperty("autoScriptInterface")
-                ? `"autoScriptInterface": ${config.Exps[key].autoScriptInterface},`
-                : ""
-            }
+      .map((key) => {
+        return `"${key}": {
+            ${config.Exps[key].hasOwnProperty("forward")
+            ? `"forward": (inst) => inst.${config.Exps[key].forward},`
+            : ""
+          }
+            ${config.Exps[key].hasOwnProperty("handler")
+            ? `"handler": ${config.Exps[key].handler},`
+            : ""
+          }
           }`;
-        })
-        .join(",\n")}
+      })
+      .join(",\n")}
     },
   };`;
 }
@@ -548,12 +522,10 @@ function getRuntimePluginInfoFromConfig(config) {
 // write behavior.js and replace "//<-- BEHAVIOR_INFO -->" with the plugin info
 const plugin = fs.readFileSync("./src/behavior.js", "utf8");
 const instance = fs.readFileSync("./src/instance.js", "utf8");
-const scriptInterface = fs.readFileSync("./src/scriptInterface.js", "utf8");
 const pluginPluginInfo = getRuntimePluginInfoFromConfig(config);
 const pluginWithPluginInfo = plugin
   .replaceAll("//<-- BEHAVIOR_INFO -->", pluginPluginInfo)
-  .replaceAll("//<-- INSTANCE -->", instance)
-  .replaceAll("//<-- SCRIPT_INTERFACE -->", scriptInterface);
+  .replaceAll("//<-- INSTANCE -->", instance);
 
 fs.writeFileSync("./export/c3runtime/behavior.js", pluginWithPluginInfo);
 

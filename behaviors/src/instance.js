@@ -1,36 +1,27 @@
-function getInstanceJs(parentClass, scriptInterface, addonTriggers, C3) {
+function getInstanceJs(parentClass, addonTriggers, C3) {
   return class extends parentClass {
-    constructor(inst, properties) {
-      super(inst);
+    constructor() {
+      super();
+
+      const properties = this._getInitProperties();
 
       if (properties) {
+
       }
     }
 
-    Release() {
-      super.Release();
+    _release() {
+      super._release();
     }
 
-    SaveToJson() {
+    _saveToJson() {
       return {
         // data to be saved for savegames
       };
     }
 
-    LoadFromJson(o) {
+    _loadFromJson(o) {
       // load state for savegames
-    }
-
-    Trigger(method) {
-      super.Trigger(method);
-      const addonTrigger = addonTriggers.find((x) => x.method === method);
-      if (addonTrigger) {
-        this.GetScriptInterface().dispatchEvent(new C3.Event(addonTrigger.id));
-      }
-    }
-
-    GetScriptInterfaceClass() {
-      return scriptInterface;
     }
   };
 }
