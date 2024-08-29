@@ -1,0 +1,12 @@
+  extensionScript: {
+    enabled: true, // set to false to disable the extension script
+    watch: <@LIVE_RELOAD>, // set to true to enable live reload on changes during development
+    targets: [
+      "x86",
+      "x64",
+      // "ARM64", // Disabled for now because the provided base project doesn't support it
+    ],
+
+    // you don't need to change this, the build step will rename the dll for you. Only change this if you change the name of the dll exported by Visual Studio
+    name: "MyExtension",
+  },
