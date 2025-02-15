@@ -1,3 +1,6 @@
+### FOR SDK V2 SUPPORT, USE THE NEW ADDON FRAMEWORK
+https://github.com/ConstructFund/construct-addon-wizard-scaffold
+
 Just copy the content of any of the directories to start working on an addon.
 
 ## How to use Construct 3 Release Github Action
